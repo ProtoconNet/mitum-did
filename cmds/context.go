@@ -4,7 +4,7 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/soonkuk/mitum-blocksign/digest"
+	"github.com/ProtoconNet/mitum-did/digest"
 	"github.com/spikeekips/mitum/launch/process"
 	"github.com/spikeekips/mitum/storage"
 	mongodbstorage "github.com/spikeekips/mitum/storage/mongodb"

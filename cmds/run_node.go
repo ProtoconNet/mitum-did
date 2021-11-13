@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
-	"github.com/soonkuk/mitum-blocksign/digest"
+	"github.com/ProtoconNet/mitum-did/digest"
 
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/base/block"

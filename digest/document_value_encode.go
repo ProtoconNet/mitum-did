@@ -1,7 +1,7 @@
 package digest
 
 import (
-	"github.com/soonkuk/mitum-blocksign/blocksign"
+	"github.com/ProtoconNet/mitum-did/did"
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/util/encoder"
 )
