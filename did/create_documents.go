@@ -13,9 +13,9 @@ import (
 )
 
 var (
-	CreateDocumentsFactType = hint.Type("mitum-blocksign-create-documents-operation-fact")
+	CreateDocumentsFactType = hint.Type("mitum-did-create-documents-operation-fact")
 	CreateDocumentsFactHint = hint.NewHint(CreateDocumentsFactType, "v0.0.1")
-	CreateDocumentsType     = hint.Type("mitum-blocksign-create-documents-operation")
+	CreateDocumentsType     = hint.Type("mitum-did-create-documents-operation")
 	CreateDocumentsHint     = hint.NewHint(CreateDocumentsType, "v0.0.1")
 )
 

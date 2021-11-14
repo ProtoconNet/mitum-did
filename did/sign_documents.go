@@ -12,9 +12,9 @@ import (
 )
 
 var (
-	SignDocumentsFactType = hint.Type("mitum-blocksign-sign-documents-operation-fact")
+	SignDocumentsFactType = hint.Type("mitum-did-sign-documents-operation-fact")
 	SignDocumentsFactHint = hint.NewHint(SignDocumentsFactType, "v0.0.1")
-	SignDocumentsType     = hint.Type("mitum-blocksign-sign-documents-operation")
+	SignDocumentsType     = hint.Type("mitum-did-sign-documents-operation")
 	SignDocumentsHint     = hint.NewHint(SignDocumentsType, "v0.0.1")
 )
 

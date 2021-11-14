@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	DocumentInventoryType = hint.Type("mbs-document-inventory")
+	DocumentInventoryType = hint.Type("mitum-did-document-inventory")
 	DocumentInventoryHint = hint.NewHint(DocumentInventoryType, "v0.0.1")
 )
 

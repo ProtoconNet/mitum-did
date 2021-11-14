@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	DocumentDataType = hint.Type("mitum-blocksign-document-data")
+	DocumentDataType = hint.Type("mitum-did-document-data")
 	DocumentDataHint = hint.NewHint(DocumentDataType, "v0.0.1")
 )
 
@@ -236,7 +236,7 @@ func (ct Content) Equal(b Content) bool {
 }
 
 var (
-	DocSignType = hint.Type("mitum-blocksign-docsign")
+	DocSignType = hint.Type("mitum-did-docsign")
 	DocSignHint = hint.NewHint(DocSignType, "v0.0.1")
 )
 
@@ -393,12 +393,12 @@ func (ds *DocSign) UnpackBSON(b []byte, enc *bsonenc.Encoder) error {
 }
 
 var (
-	DocInfoType = hint.Type("mitum-blocksign-document-info")
+	DocInfoType = hint.Type("mitum-did-document-info")
 	DocInfoHint = hint.NewHint(DocInfoType, "v0.0.1")
 )
 
 type DocInfo struct {
-	idx      currency.Big
+	idx     currency.Big
 	content Content
 }
 
@@ -408,7 +408,7 @@ func NewDocInfo(idx int64, ct Content) DocInfo {
 		return DocInfo{}
 	}
 	docInfo := DocInfo{
-		idx:      id,
+		idx:     id,
 		content: ct,
 	}
 	return docInfo
@@ -432,7 +432,7 @@ func NewDocInfoFromString(id string, ct string) (DocInfo, error) {
 		return DocInfo{}, nil
 	}
 	docInfo := DocInfo{
-		idx:      idx,
+		idx:     idx,
 		content: Content(ct),
 	}
 	return docInfo, nil
@@ -494,7 +494,7 @@ func (di DocInfo) WithData(idx currency.Big, ct Content) DocInfo {
 type DocInfoJSONPacker struct {
 	jsonenc.HintedHead
 	ID currency.Big `json:"documentid"`
-	CT Content     `json:"content"`
+	CT Content      `json:"content"`
 }
 
 func (di DocInfo) MarshalJSON() ([]byte, error) {
@@ -524,7 +524,7 @@ func (di *DocInfo) UnpackJSON(b []byte, enc *jsonenc.Encoder) error {
 
 type DocInfoBSONPacker struct {
 	ID currency.Big `bson:"documentid"`
-	CT string     `bson:"content"`
+	CT string       `bson:"content"`
 }
 
 func (di DocInfo) MarshalBSON() ([]byte, error) {
@@ -532,7 +532,7 @@ func (di DocInfo) MarshalBSON() ([]byte, error) {
 		bsonenc.NewHintedDoc(di.Hint()),
 		bson.M{
 			"documentid": di.idx,
-			"content":   di.content,
+			"content":    di.content,
 		}),
 	)
 }

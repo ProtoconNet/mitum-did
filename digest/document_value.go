@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	DocumentValueType = hint.Type("mitum-blocksign-document-value")
+	DocumentValueType = hint.Type("mitum-did-document-value")
 	DocumentValueHint = hint.NewHint(DocumentValueType, "v0.0.1")
 )
 
