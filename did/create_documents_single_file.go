@@ -17,7 +17,7 @@ type CreateDocumentsItemSingleFile struct {
 }
 
 func NewCreateDocumentsItemSingleFile(
-	fh FileHash,
+	ct Content,
 	documentid currency.Big,
 	signcode, title string,
 	size currency.Big,
@@ -28,7 +28,7 @@ func NewCreateDocumentsItemSingleFile(
 	return CreateDocumentsItemSingleFile{
 		BaseCreateDocumentsItem: NewBaseCreateDocumentsItem(
 			CreateDocumentsItemSingleFileHint,
-			fh,
+			ct,
 			documentid,
 			signcode,
 			title,

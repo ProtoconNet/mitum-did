@@ -10,7 +10,7 @@ import (
 
 type BaseCreateDocumentsItem struct {
 	hint       hint.Hint
-	fileHash   FileHash
+	content    Content
 	documentid currency.Big
 	signcode   string //creator signcode
 	title      string
@@ -21,7 +21,7 @@ type BaseCreateDocumentsItem struct {
 }
 
 func NewBaseCreateDocumentsItem(ht hint.Hint,
-	filehash FileHash,
+	content Content,
 	documentid currency.Big,
 	signcode, title string,
 	size currency.Big,
@@ -30,7 +30,7 @@ func NewBaseCreateDocumentsItem(ht hint.Hint,
 	cid currency.CurrencyID) BaseCreateDocumentsItem {
 	return BaseCreateDocumentsItem{
 		hint:       ht,
-		fileHash:   filehash,
+		content:   content,
 		documentid: documentid,
 		signcode:   signcode,
 		title:      title,
@@ -47,7 +47,7 @@ func (it BaseCreateDocumentsItem) Hint() hint.Hint {
 
 func (it BaseCreateDocumentsItem) Bytes() []byte {
 	bs := make([][]byte, len(it.signers)+len(it.signcodes)+6)
-	bs[0] = it.fileHash.Bytes()
+	bs[0] = it.content.Bytes()
 	bs[1] = it.documentid.Bytes()
 	bs[2] = []byte(it.signcode)
 	bs[3] = []byte(it.title)
@@ -64,8 +64,8 @@ func (it BaseCreateDocumentsItem) Bytes() []byte {
 }
 
 func (it BaseCreateDocumentsItem) IsValid([]byte) error {
-	if len(it.fileHash) < 1 {
-		return errors.Errorf("empty fileHash")
+	if len(it.content) < 1 {
+		return errors.Errorf("empty content")
 	}
 	if (it.documentid == currency.Big{}) {
 		return errors.Errorf("empty documentid")
@@ -85,9 +85,9 @@ func (it BaseCreateDocumentsItem) IsValid([]byte) error {
 	return nil
 }
 
-// FileHash return BaseCreateDocumetsItem's owner address.
-func (it BaseCreateDocumentsItem) FileHash() FileHash {
-	return it.fileHash
+// Content return BaseCreateDocumetsItem's owner address.
+func (it BaseCreateDocumentsItem) Content() Content {
+	return it.content
 }
 
 func (it BaseCreateDocumentsItem) DocumentId() currency.Big {

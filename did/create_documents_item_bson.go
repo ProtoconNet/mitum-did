@@ -11,7 +11,7 @@ func (it BaseCreateDocumentsItem) MarshalBSON() ([]byte, error) {
 	return bsonenc.Marshal(
 		bsonenc.MergeBSONM(bsonenc.NewHintedDoc(it.Hint()),
 			bson.M{
-				"filehash":   it.fileHash,
+				"content":   it.content,
 				"documentid": it.documentid,
 				"signcode":   it.signcode,
 				"title":      it.title,
@@ -24,7 +24,7 @@ func (it BaseCreateDocumentsItem) MarshalBSON() ([]byte, error) {
 }
 
 type CreateDocumentsItemBSONUnpacker struct {
-	FH string                `bson:"filehash"`
+	CT string                `bson:"content"`
 	DI currency.Big          `bson:"documentid"`
 	SC string                `bson:"signcode"`
 	TL string                `bson:"title"`
@@ -45,5 +45,5 @@ func (it *BaseCreateDocumentsItem) UnpackBSON(b []byte, enc *bsonenc.Encoder) er
 		return err
 	}
 
-	return it.unpack(enc, ht.H, ucd.FH, ucd.DI, ucd.SC, ucd.TL, ucd.SZ, ucd.SG, ucd.SD, ucd.CI)
+	return it.unpack(enc, ht.H, ucd.CT, ucd.DI, ucd.SC, ucd.TL, ucd.SZ, ucd.SG, ucd.SD, ucd.CI)
 }

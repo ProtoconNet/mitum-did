@@ -26,7 +26,7 @@ var (
 	templateBig              = currency.NewBig(-333)
 	templateSignedAtString   = "2020-10-08T07:53:26Z"
 	templateSignedAt         time.Time
-	templateFileHash         = did.FileHash("abcd")
+	templateContent          = did.Content("abcd")
 	templateSigncode         = "tigers"
 	templateTitle            = "my_document"
 	templateSize             = currency.NewBig(555)
@@ -179,7 +179,7 @@ func (Builder) templateCreateDocumentsFact() Hal {
 		templateToken,
 		templateSender,
 		[]did.CreateDocumentsItem{did.NewCreateDocumentsItemSingleFile(
-			templateFileHash,
+			templateContent,
 			templateId,
 			templateSigncode,
 			templateTitle,
@@ -307,12 +307,12 @@ func (bl Builder) buildFactCreateDocuments(fact did.CreateDocumentsFact) (Hal, e
 	items := make([]did.CreateDocumentsItem, len(fact.Items()))
 	for i := range fact.Items() {
 		item := fact.Items()[i]
-		if len(item.FileHash()) < 1 {
-			return nil, errors.Errorf("empty FileHash")
+		if len(item.Content()) < 1 {
+			return nil, errors.Errorf("empty Content")
 		}
 
 		items[i] = did.NewCreateDocumentsItemSingleFile(
-			item.FileHash(),
+			item.Content(),
 			item.DocumentId(),
 			item.Signcode(),
 			item.Title(),
@@ -647,8 +647,8 @@ func (Builder) isValidFactCreateDocuments(fact did.CreateDocumentsFact) error {
 	}
 
 	for i := range fact.Items() {
-		if same := fact.Items()[i].FileHash().Equal(templateFileHash); same {
-			return errors.Errorf("Please set filehash; filehash is same with template default")
+		if same := fact.Items()[i].Content().Equal(templateContent); same {
+			return errors.Errorf("Please set content; content is same with template default")
 		}
 	}
 

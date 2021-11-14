@@ -92,12 +92,12 @@ func (doc DocumentData) GenerateHash() valuehash.Hash {
 }
 
 func (doc DocumentData) IsEmpty() bool {
-	return len(doc.info.FileHash()) < 1 || len(doc.signers) < 1 || len(doc.title) < 1 || !doc.size.OverZero()
+	return len(doc.info.Content()) < 1 || len(doc.signers) < 1 || len(doc.title) < 1 || !doc.size.OverZero()
 }
 
 func (doc DocumentData) IsValid([]byte) error {
 	if err := isvalid.Check([]isvalid.IsValider{
-		doc.info.FileHash(),
+		doc.info.Content(),
 		doc.creator,
 	}, nil, false); err != nil {
 		return errors.Wrap(err, "invalid document data")
@@ -115,8 +115,8 @@ func (doc DocumentData) IsValid([]byte) error {
 	return nil
 }
 
-func (doc DocumentData) FileHash() FileHash {
-	return doc.info.FileHash()
+func (doc DocumentData) Content() Content {
+	return doc.info.Content()
 }
 
 func (doc DocumentData) SignCode() string {
@@ -164,7 +164,7 @@ func (doc DocumentData) Addresses() ([]base.Address, error) {
 func (doc DocumentData) String() string {
 
 	return fmt.Sprintf("%s:%s:%s:%s:%s",
-		doc.FileHash().String(),
+		doc.Content().String(),
 		doc.info.String(),
 		doc.creator.String(),
 		doc.title,
@@ -173,7 +173,7 @@ func (doc DocumentData) String() string {
 
 func (doc DocumentData) Equal(b DocumentData) bool {
 
-	if doc.FileHash() != b.FileHash() {
+	if doc.Content() != b.Content() {
 		return false
 	}
 
@@ -214,25 +214,25 @@ func (doc DocumentData) WithData(info DocInfo, creator DocSign, signcode string,
 	return doc
 }
 
-type FileHash string
+type Content string
 
-func (fh FileHash) Bytes() []byte {
-	return []byte(fh)
+func (ct Content) Bytes() []byte {
+	return []byte(ct)
 }
 
-func (fh FileHash) String() string {
-	return string(fh)
+func (ct Content) String() string {
+	return string(ct)
 }
 
-func (fh FileHash) IsValid([]byte) error {
-	if len(fh) < 1 {
-		return errors.Errorf("empty fileHash")
+func (ct Content) IsValid([]byte) error {
+	if len(ct) < 1 {
+		return errors.Errorf("empty content")
 	}
 	return nil
 }
 
-func (fh FileHash) Equal(b FileHash) bool {
-	return fh == b
+func (ct Content) Equal(b Content) bool {
+	return ct == b
 }
 
 var (
@@ -399,30 +399,30 @@ var (
 
 type DocInfo struct {
 	idx      currency.Big
-	filehash FileHash
+	content Content
 }
 
-func NewDocInfo(idx int64, fh FileHash) DocInfo {
+func NewDocInfo(idx int64, ct Content) DocInfo {
 	id := currency.NewBig(idx)
 	if !id.OverNil() {
 		return DocInfo{}
 	}
 	docInfo := DocInfo{
 		idx:      id,
-		filehash: fh,
+		content: ct,
 	}
 	return docInfo
 }
 
-func MustNewDocInfo(idx int64, fh FileHash) DocInfo {
-	docInfo := NewDocInfo(idx, fh)
+func MustNewDocInfo(idx int64, ct Content) DocInfo {
+	docInfo := NewDocInfo(idx, ct)
 	if err := docInfo.IsValid(nil); err != nil {
 		panic(err)
 	}
 	return docInfo
 }
 
-func NewDocInfoFromString(id string, fh string) (DocInfo, error) {
+func NewDocInfoFromString(id string, ct string) (DocInfo, error) {
 	i, ok := new(big.Int).SetString(id, 10)
 	if !ok {
 		return DocInfo{}, errors.Errorf("not proper DocInfo string, %q", id)
@@ -433,7 +433,7 @@ func NewDocInfoFromString(id string, fh string) (DocInfo, error) {
 	}
 	docInfo := DocInfo{
 		idx:      idx,
-		filehash: FileHash(fh),
+		content: Content(ct),
 	}
 	return docInfo, nil
 }
@@ -442,13 +442,13 @@ func (di DocInfo) Index() currency.Big {
 	return di.idx
 }
 
-func (di DocInfo) FileHash() FileHash {
-	return di.filehash
+func (di DocInfo) Content() Content {
+	return di.content
 }
 
 func (di DocInfo) Bytes() []byte {
 
-	return util.ConcatBytesSlice(di.idx.Bytes(), di.filehash.Bytes())
+	return util.ConcatBytesSlice(di.idx.Bytes(), di.content.Bytes())
 }
 
 func (di DocInfo) Hash() valuehash.Hash {
@@ -466,7 +466,7 @@ func (di DocInfo) Hint() hint.Hint {
 func (di DocInfo) IsValid([]byte) error {
 	if err := di.idx.IsValid(nil); err != nil {
 		return err
-	} else if err := di.filehash.IsValid(nil); err != nil {
+	} else if err := di.content.IsValid(nil); err != nil {
 		return err
 	}
 
@@ -474,40 +474,40 @@ func (di DocInfo) IsValid([]byte) error {
 }
 
 func (di DocInfo) IsEmpty() bool {
-	return !di.idx.OverNil() || len(di.filehash) < 1
+	return !di.idx.OverNil() || len(di.content) < 1
 }
 
 func (di DocInfo) String() string {
-	return fmt.Sprintf("%s:%s", di.idx.String(), di.filehash.String())
+	return fmt.Sprintf("%s:%s", di.idx.String(), di.content.String())
 }
 
 func (di DocInfo) Equal(b DocInfo) bool {
-	return di.idx.Equal(b.idx) && di.filehash.Equal(b.filehash)
+	return di.idx.Equal(b.idx) && di.content.Equal(b.content)
 }
 
-func (di DocInfo) WithData(idx currency.Big, fh FileHash) DocInfo {
+func (di DocInfo) WithData(idx currency.Big, ct Content) DocInfo {
 	di.idx = idx
-	di.filehash = fh
+	di.content = ct
 	return di
 }
 
 type DocInfoJSONPacker struct {
 	jsonenc.HintedHead
 	ID currency.Big `json:"documentid"`
-	FH FileHash     `json:"filehash"`
+	CT Content     `json:"content"`
 }
 
 func (di DocInfo) MarshalJSON() ([]byte, error) {
 	return jsonenc.Marshal(DocInfoJSONPacker{
 		HintedHead: jsonenc.NewHintedHead(di.Hint()),
 		ID:         di.idx,
-		FH:         di.filehash,
+		CT:         di.content,
 	})
 }
 
 type DocInfoJSONUnpacker struct {
 	ID currency.Big `json:"documentid"`
-	FH string       `json:"filehash"`
+	CT string       `json:"content"`
 }
 
 func (di *DocInfo) UnpackJSON(b []byte, enc *jsonenc.Encoder) error {
@@ -517,14 +517,14 @@ func (di *DocInfo) UnpackJSON(b []byte, enc *jsonenc.Encoder) error {
 	}
 
 	di.idx = udi.ID
-	di.filehash = FileHash(udi.FH)
+	di.content = Content(udi.CT)
 
 	return nil
 }
 
 type DocInfoBSONPacker struct {
 	ID currency.Big `bson:"documentid"`
-	FH FileHash     `bson:"filehash"`
+	CT string     `bson:"content"`
 }
 
 func (di DocInfo) MarshalBSON() ([]byte, error) {
@@ -532,14 +532,14 @@ func (di DocInfo) MarshalBSON() ([]byte, error) {
 		bsonenc.NewHintedDoc(di.Hint()),
 		bson.M{
 			"documentid": di.idx,
-			"filehash":   di.filehash,
+			"content":   di.content,
 		}),
 	)
 }
 
 type DocInfoBSONUnpacker struct {
 	ID currency.Big `bson:"documentid"`
-	FH string       `bson:"filehash"`
+	CT string       `bson:"content"`
 }
 
 func (di *DocInfo) UnmarshalBSON(b []byte) error {
@@ -549,7 +549,7 @@ func (di *DocInfo) UnmarshalBSON(b []byte) error {
 	}
 
 	di.idx = udi.ID
-	di.filehash = FileHash(udi.FH)
+	di.content = Content(udi.CT)
 
 	return nil
 }

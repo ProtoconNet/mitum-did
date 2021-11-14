@@ -21,7 +21,7 @@ type CreateDocumentsItemProcessor struct {
 	sender  base.Address
 	h       valuehash.Hash
 	item    CreateDocumentsItem
-	nds     state.State // new document data state (key = document filehash)
+	nds     state.State // new document data state (key = document content)
 	docInfo DocInfo     // new document info
 
 }
@@ -58,7 +58,7 @@ func (opp *CreateDocumentsItemProcessor) PreProcess(
 	// prepare doccInfo
 	opp.docInfo = DocInfo{
 		idx:      opp.item.DocumentId(),
-		filehash: opp.item.FileHash(),
+		content: opp.item.Content(),
 	}
 
 	// check sigenrs account existence

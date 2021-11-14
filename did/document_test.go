@@ -20,7 +20,7 @@ type testDocumentData struct {
 }
 
 func (t *testDocumentData) TestNew() {
-	fh := FileHash("ABCD")
+	ct := Content("ABCD")
 	cPkey := key.MustNewBTCPrivatekey()
 	cKey, _ := currency.NewKey(cPkey.Publickey(), 100)
 	cKeys, _ := currency.NewKeys([]currency.Key{cKey}, 100)
@@ -39,11 +39,11 @@ func (t *testDocumentData) TestNew() {
 
 	info := DocInfo{
 		idx:      currency.NewBig(0),
-		filehash: fh,
+		content: ct,
 	}
 
 	a := MustNewDocumentData(info, aCreator, aSigncode0, title, size, sDocSigns)
-	t.Equal(a.FileHash(), FileHash("ABCD"))
+	t.Equal(a.Content(), Content("ABCD"))
 	t.Equal(a.Creator(), aCreator)
 	t.Equal(a.Signers(), sDocSigns)
 }
@@ -57,7 +57,7 @@ func testDocumentDataEncode(enc encoder.Encoder) suite.TestingSuite {
 
 	t.enc = enc
 	t.newObject = func() interface{} {
-		fh := FileHash("ABCD")
+		ct := Content("ABCD")
 		cPkey := key.MustNewBTCPrivatekey()
 		cKey, _ := currency.NewKey(cPkey.Publickey(), 100)
 		cKeys, _ := currency.NewKeys([]currency.Key{cKey}, 100)
@@ -76,7 +76,7 @@ func testDocumentDataEncode(enc encoder.Encoder) suite.TestingSuite {
 
 		info := DocInfo{
 			idx:      currency.NewBig(0),
-			filehash: fh,
+			content: ct,
 		}
 
 		a := MustNewDocumentData(info, aCreator, aSigncode0, title, size, sDocSigns)
@@ -126,7 +126,7 @@ func testDocumentDataEncode(enc encoder.Encoder) suite.TestingSuite {
 		ca := a.(DocumentData)
 		cb := b.(DocumentData)
 
-		t.True(ca.FileHash().Equal(cb.FileHash()))
+		t.True(ca.Content().Equal(cb.Content()))
 		t.True(ca.Creator().Equal(cb.Creator()))
 		signers := ca.Signers()
 		for i := range signers {

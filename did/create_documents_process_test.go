@@ -82,7 +82,7 @@ func (t *testCreateDocumentsOperation) TestNormalCase() {
 	opr := t.processor(cp, pool)
 
 	// filedata
-	fh := FileHash("ABCD")
+	ct := Content("ABCD")
 	documentid := currency.NewBig(0)
 	signcode0 := "user0"
 	title := "title01"
@@ -92,7 +92,7 @@ func (t *testCreateDocumentsOperation) TestNormalCase() {
 	// create document of na(document account) with oa(owner) which is sent from sa(sender)
 	items := []CreateDocumentsItem{
 		NewCreateDocumentsItemSingleFile(
-			fh,
+			ct,
 			documentid,
 			signcode0,
 			title,
@@ -140,11 +140,11 @@ func (t *testCreateDocumentsOperation) TestNormalCase() {
 	t.Equal(fee, sb.(currency.AmountState).Fee())
 
 	ndd, _ := StateDocumentDataValue(nds)
-	t.True(ndd.FileHash().Equal(fh))
+	t.True(ndd.Content().Equal(ct))
 	t.True(ndd.Creator().Equal(sa.Address))
 
 	ndinv, _ := StateDocumentsValue(ns)
-	t.True(ndinv.Documents()[0].FileHash().Equal(fh))
+	t.True(ndinv.Documents()[0].Content().Equal(ct))
 }
 
 func (t *testCreateDocumentsOperation) TestSignerAccountsNotExist() {
@@ -167,7 +167,7 @@ func (t *testCreateDocumentsOperation) TestSignerAccountsNotExist() {
 	opr := t.processor(cp, pool)
 
 	// filedata
-	fh := FileHash("ABCD")
+	ct := Content("ABCD")
 	documentid := currency.NewBig(0)
 	signcode0 := "user0"
 	title := "title01"
@@ -177,7 +177,7 @@ func (t *testCreateDocumentsOperation) TestSignerAccountsNotExist() {
 	// create document of na(document account) with oa(owner) which is sent from sa(sender)
 	items := []CreateDocumentsItem{
 		NewCreateDocumentsItemSingleFile(
-			fh,
+			ct,
 			documentid,
 			signcode0,
 			title,
@@ -207,11 +207,11 @@ func (t *testCreateDocumentsOperation) TestDocumentAlreadyExists() {
 	sa0, st0 := t.newAccount(true, balance)
 	sa1, st1 := t.newAccount(true, balance)
 
-	filehash := FileHash("ABCD")
+	content := Content("ABCD")
 	documentid := currency.NewBig(0)
 	info := DocInfo{
 		idx:      documentid,
-		filehash: filehash,
+		content: content,
 	}
 	signcode0 := "user0"
 	title := "title01"
@@ -233,7 +233,7 @@ func (t *testCreateDocumentsOperation) TestDocumentAlreadyExists() {
 
 	items := []CreateDocumentsItem{
 		NewCreateDocumentsItemSingleFile(
-			filehash,
+			content,
 			documentid,
 			signcode0,
 			title,
@@ -273,7 +273,7 @@ func (t *testCreateDocumentsOperation) TestSameSenders() {
 
 	opr := t.processor(cp, pool)
 
-	filehash := FileHash("ABCD")
+	content := Content("ABCD")
 	documentid0 := currency.NewBig(0)
 	documentid1 := currency.NewBig(1)
 	signcode0 := "user0"
@@ -284,7 +284,7 @@ func (t *testCreateDocumentsOperation) TestSameSenders() {
 	// create document of na(document account) with oa(owner) which is sent from sa(sender)
 	items0 := []CreateDocumentsItem{
 		NewCreateDocumentsItemSingleFile(
-			filehash,
+			content,
 			documentid0,
 			signcode0,
 			title,
@@ -299,7 +299,7 @@ func (t *testCreateDocumentsOperation) TestSameSenders() {
 
 	items1 := []CreateDocumentsItem{
 		NewCreateDocumentsItemSingleFile(
-			filehash,
+			content,
 			documentid1,
 			signcode0,
 			title,
@@ -336,7 +336,7 @@ func (t *testCreateDocumentsOperation) TestSameSendersWithInvalidOperation() {
 
 	opr := t.processor(cp, pool)
 
-	filehash := FileHash("ABCD")
+	content := Content("ABCD")
 	documentid0 := currency.NewBig(0)
 	documentid1 := currency.NewBig(1)
 	signcode0 := "user0"
@@ -349,7 +349,7 @@ func (t *testCreateDocumentsOperation) TestSameSendersWithInvalidOperation() {
 	{
 		items := []CreateDocumentsItem{
 			NewCreateDocumentsItemSingleFile(
-				filehash,
+				content,
 				documentid0,
 				signcode0,
 				title,
@@ -369,7 +369,7 @@ func (t *testCreateDocumentsOperation) TestSameSendersWithInvalidOperation() {
 	// create document of na(document account) with oa(owner) which is sent from sa(sender)
 	items0 := []CreateDocumentsItem{
 		NewCreateDocumentsItemSingleFile(
-			filehash,
+			content,
 			documentid0,
 			signcode0,
 			title,
@@ -384,7 +384,7 @@ func (t *testCreateDocumentsOperation) TestSameSendersWithInvalidOperation() {
 
 	items1 := []CreateDocumentsItem{
 		NewCreateDocumentsItemSingleFile(
-			filehash,
+			content,
 			documentid1,
 			signcode0,
 			title,
@@ -421,7 +421,7 @@ func (t *testCreateDocumentsOperation) TestSignerSameWithOwner() {
 
 	opr := t.processor(cp, pool)
 
-	filehash := FileHash("ABCD")
+	content := Content("ABCD")
 	documentid0 := currency.NewBig(0)
 	signcode0 := "user0"
 	title := "title01"
@@ -431,7 +431,7 @@ func (t *testCreateDocumentsOperation) TestSignerSameWithOwner() {
 	// create document of na(document account) with oa(owner) which is sent from sa(sender)
 	items0 := []CreateDocumentsItem{
 		NewCreateDocumentsItemSingleFile(
-			filehash,
+			content,
 			documentid0,
 			signcode0,
 			title,
@@ -469,7 +469,7 @@ func (t *testCreateDocumentsOperation) TestDuplicatedSigner() {
 
 	opr := t.processor(cp, pool)
 
-	filehash := FileHash("ABCD")
+	content := Content("ABCD")
 	documentid0 := currency.NewBig(0)
 	signcode0 := "user0"
 	title := "title01"
@@ -480,7 +480,7 @@ func (t *testCreateDocumentsOperation) TestDuplicatedSigner() {
 	// create document of na(document account) with oa(owner) which is sent from sa(sender)
 	items0 := []CreateDocumentsItem{
 		NewCreateDocumentsItemSingleFile(
-			filehash,
+			content,
 			documentid0,
 			signcode0,
 			title,
@@ -521,8 +521,8 @@ func (t *testCreateDocumentsOperation) TestMultipleItemsWithFee() {
 
 	opr := t.processor(cp, pool)
 
-	filehash0 := FileHash("ABCD")
-	filehash1 := FileHash("EFGH")
+	content0 := Content("ABCD")
+	content1 := Content("EFGH")
 	documentid0 := currency.NewBig(0)
 	documentid1 := currency.NewBig(1)
 	signcode0 := "user0"
@@ -531,7 +531,7 @@ func (t *testCreateDocumentsOperation) TestMultipleItemsWithFee() {
 
 	items := []CreateDocumentsItem{
 		NewCreateDocumentsItemSingleFile(
-			filehash0,
+			content0,
 			documentid0,
 			signcode0,
 			title,
@@ -541,7 +541,7 @@ func (t *testCreateDocumentsOperation) TestMultipleItemsWithFee() {
 			cid0,
 		),
 		NewCreateDocumentsItemSingleFile(
-			filehash1,
+			content1,
 			documentid1,
 			signcode0,
 			title,
@@ -589,8 +589,8 @@ func (t *testCreateDocumentsOperation) TestMultipleItemsWithFee() {
 
 	udinv := ns.Value().Interface().(DocumentInventory)
 
-	t.True(filehash0.Equal(udinv.Documents()[0].FileHash()))
-	t.True(filehash1.Equal(udinv.Documents()[1].FileHash()))
+	t.True(content0.Equal(udinv.Documents()[0].Content()))
+	t.True(content1.Equal(udinv.Documents()[1].Content()))
 
 	t.Equal(len(balance), len(sb))
 
@@ -604,11 +604,11 @@ func (t *testCreateDocumentsOperation) TestMultipleItemsWithFee() {
 	t.Equal(fee1, sb[cid1].(currency.AmountState).Fee())
 
 	ndd0, _ := StateDocumentDataValue(dds0)
-	t.True(ndd0.FileHash().Equal(filehash0))
+	t.True(ndd0.Content().Equal(content0))
 	t.True(ndd0.Creator().Equal(sa.Address))
 
 	ndd1, _ := StateDocumentDataValue(dds1)
-	t.True(ndd1.FileHash().Equal(filehash1))
+	t.True(ndd1.Content().Equal(content1))
 	t.True(ndd1.Creator().Equal(sa.Address))
 }
 
@@ -639,7 +639,7 @@ func (t *testCreateDocumentsOperation) TestInSufficientBalanceForFee() {
 	opr := t.processor(cp, pool)
 
 	// filedata
-	filehash := FileHash("ABCD")
+	content := Content("ABCD")
 	documentid0 := currency.NewBig(0)
 	signcode0 := "user0"
 	title := "title01"
@@ -648,7 +648,7 @@ func (t *testCreateDocumentsOperation) TestInSufficientBalanceForFee() {
 	// create document of na(document account) with oa(owner) which is sent from sa(sender)
 	items := []CreateDocumentsItem{
 		NewCreateDocumentsItemSingleFile(
-			filehash,
+			content,
 			documentid0,
 			signcode0,
 			title,
@@ -692,7 +692,7 @@ func (t *testCreateDocumentsOperation) TestUnknownCurrencyID() {
 	opr := t.processor(cp, pool)
 
 	// filedata
-	filehash := FileHash("ABCD")
+	content := Content("ABCD")
 	documentid0 := currency.NewBig(0)
 	signcode0 := "user0"
 	title := "title01"
@@ -701,7 +701,7 @@ func (t *testCreateDocumentsOperation) TestUnknownCurrencyID() {
 	// create document of na(document account) with oa(owner) which is sent from sa(sender)
 	items := []CreateDocumentsItem{
 		NewCreateDocumentsItemSingleFile(
-			filehash,
+			content,
 			documentid0,
 			signcode0,
 			title,
@@ -741,7 +741,7 @@ func (t *testCreateDocumentsOperation) TestEmptyCurrency() {
 	opr := t.processor(cp, pool)
 
 	// filedata
-	filehash := FileHash("ABCD")
+	content := Content("ABCD")
 	documentid0 := currency.NewBig(0)
 	signcode0 := "user0"
 	title := "title01"
@@ -750,7 +750,7 @@ func (t *testCreateDocumentsOperation) TestEmptyCurrency() {
 	// create document of na(document account) with oa(owner) which is sent from sa(sender)
 	items := []CreateDocumentsItem{
 		NewCreateDocumentsItemSingleFile(
-			filehash,
+			content,
 			documentid0,
 			signcode0,
 			title,
@@ -787,7 +787,7 @@ func (t *testCreateDocumentsOperation) TestSenderBalanceNotExist() {
 	opr := t.processor(cp, pool)
 
 	// filedata
-	filehash := FileHash("ABCD")
+	content := Content("ABCD")
 	documentid0 := currency.NewBig(0)
 	signcode0 := "user0"
 	title := "title01"
@@ -797,7 +797,7 @@ func (t *testCreateDocumentsOperation) TestSenderBalanceNotExist() {
 	// create document of na(document account) with oa(owner) which is sent from sa(sender)
 	items := []CreateDocumentsItem{
 		NewCreateDocumentsItemSingleFile(
-			filehash,
+			content,
 			documentid0,
 			signcode0,
 			title,

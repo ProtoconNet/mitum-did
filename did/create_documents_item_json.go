@@ -8,7 +8,7 @@ import (
 
 type CreateDocumentsItemJSONPacker struct {
 	jsonenc.HintedHead
-	FH FileHash            `json:"filehash"`
+	CT Content             `json:"content"`
 	DI currency.Big        `json:"documentid"`
 	SC string              `json:"signcode"`
 	TL string              `json:"title"`
@@ -21,7 +21,7 @@ type CreateDocumentsItemJSONPacker struct {
 func (it BaseCreateDocumentsItem) MarshalJSON() ([]byte, error) {
 	return jsonenc.Marshal(CreateDocumentsItemJSONPacker{
 		HintedHead: jsonenc.NewHintedHead(it.Hint()),
-		FH:         it.fileHash,
+		CT:         it.content,
 		DI:         it.documentid,
 		SC:         it.signcode,
 		TL:         it.title,
@@ -33,7 +33,7 @@ func (it BaseCreateDocumentsItem) MarshalJSON() ([]byte, error) {
 }
 
 type CreateDocumentsItemJSONUnpacker struct {
-	FH string                `json:"filehash"`
+	CT string                `json:"content"`
 	DI currency.Big          `json:"documentid"`
 	SC string                `json:"signcode"`
 	TL string                `json:"title"`
@@ -54,5 +54,5 @@ func (it *BaseCreateDocumentsItem) UnpackJSON(b []byte, enc *jsonenc.Encoder) er
 		return err
 	}
 
-	return it.unpack(enc, ht.H, ucd.FH, ucd.DI, ucd.SC, ucd.TL, ucd.SZ, ucd.SG, ucd.SD, ucd.CI)
+	return it.unpack(enc, ht.H, ucd.CT, ucd.DI, ucd.SC, ucd.TL, ucd.SZ, ucd.SG, ucd.SD, ucd.CI)
 }

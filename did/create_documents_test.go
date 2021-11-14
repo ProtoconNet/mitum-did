@@ -34,14 +34,14 @@ func (t *testCreateDocuments) TestNew() {
 
 	token := util.UUID().Bytes()
 
-	filehash := FileHash("ABCD")
+	content := Content("ABCD")
 	documentid := currency.NewBig(0)
 	signcode0 := "user0"
 	title := "title01"
 	size := currency.NewBig(555)
 	signcode1 := "user1"
 
-	item := NewCreateDocumentsItemSingleFile(filehash, documentid, signcode0, title, size, []base.Address{signerAddr}, []string{signcode1}, cid)
+	item := NewCreateDocumentsItemSingleFile(content, documentid, signcode0, title, size, []base.Address{signerAddr}, []string{signcode1}, cid)
 	fact := NewCreateDocumentsFact(token, senderAddr, []CreateDocumentsItem{item})
 
 	var fs []operation.FactSign
@@ -62,7 +62,7 @@ func (t *testCreateDocuments) TestNew() {
 	t.Implements((*operation.Operation)(nil), op)
 
 	ufact := op.Fact().(CreateDocumentsFact)
-	t.Equal(filehash, ufact.Items()[0].FileHash())
+	t.Equal(content, ufact.Items()[0].Content())
 	t.Equal(signerAddr, ufact.Items()[0].Signers()[0])
 }
 
@@ -77,14 +77,14 @@ func (t *testCreateDocuments) TestDuplicatedDocumentId() {
 	skeys, _ := currency.NewKeys([]currency.Key{skey}, 100)
 	sender, _ := currency.NewAddressFromKeys(skeys)
 	{
-		filehash := FileHash("ABCD")
+		content := Content("ABCD")
 		documentid := currency.NewBig(0)
 		signcode0 := "user0"
 		title := "title01"
 		size := currency.NewBig(555)
 
-		items = append(items, NewCreateDocumentsItemSingleFile(filehash, documentid, signcode0, title, size, []base.Address{}, []string{}, cid))
-		items = append(items, NewCreateDocumentsItemSingleFile(filehash, documentid, signcode0, title, size, []base.Address{}, []string{}, cid))
+		items = append(items, NewCreateDocumentsItemSingleFile(content, documentid, signcode0, title, size, []base.Address{}, []string{}, cid))
+		items = append(items, NewCreateDocumentsItemSingleFile(content, documentid, signcode0, title, size, []base.Address{}, []string{}, cid))
 	}
 
 	token := util.UUID().Bytes()
@@ -99,7 +99,7 @@ func (t *testCreateDocuments) TestDuplicatedDocumentId() {
 	t.NoError(err)
 
 	err = op.IsValid(nil)
-	t.Contains(err.Error(), "duplicated filehash")
+	t.Contains(err.Error(), "duplicated content")
 }
 
 func TestCreateDocuments(t *testing.T) {

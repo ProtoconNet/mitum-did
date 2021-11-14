@@ -52,7 +52,7 @@ func (t *testCreateDocumentsSingleFile) TestNew() {
 	cid := currency.CurrencyID("SHOWME")
 
 	// uploaderSignCode for document
-	fh := FileHash("ABCD")
+	ct := Content("ABCD")
 	documentid := currency.NewBig(0)
 	signcode0 := "user0"
 	title := "title01"
@@ -62,7 +62,7 @@ func (t *testCreateDocumentsSingleFile) TestNew() {
 	// create document item
 	items := []CreateDocumentsItem{
 		NewCreateDocumentsItemSingleFile(
-			fh,
+			ct,
 			documentid,
 			signcode0,
 			title,
@@ -94,12 +94,12 @@ func (t *testCreateDocumentsSingleFile) TestNew() {
 
 	ufact := cd.Fact().(CreateDocumentsFact)
 	// compare filedata from created document's fact with original filedata
-	t.Equal(fh, ufact.Items()[0].FileHash())
+	t.Equal(ct, ufact.Items()[0].Content())
 	t.Equal(signer, ufact.Items()[0].Signers()[0])
 
 }
 
-func (t *testCreateDocumentsSingleFile) TestEmptyFileHash() {
+func (t *testCreateDocumentsSingleFile) TestEmptyContent() {
 	// owner private key
 	ownerPrvk := key.MustNewBTCPrivatekey()
 
@@ -120,8 +120,8 @@ func (t *testCreateDocumentsSingleFile) TestEmptyFileHash() {
 	// currency id
 	cid := currency.CurrencyID("SHOWME")
 
-	// Empty FileHash
-	efh := FileHash("")
+	// Empty Content
+	ect := Content("")
 	documentid := currency.NewBig(0)
 	signcode0 := "user0"
 	title := "title01"
@@ -130,7 +130,7 @@ func (t *testCreateDocumentsSingleFile) TestEmptyFileHash() {
 	// create document item
 	items := []CreateDocumentsItem{
 		NewCreateDocumentsItemSingleFile(
-			efh,
+			ect,
 			documentid,
 			signcode0,
 			title,
@@ -156,7 +156,7 @@ func (t *testCreateDocumentsSingleFile) TestEmptyFileHash() {
 	t.NoError(err)
 
 	err = cd.IsValid(nil)
-	t.Contains(err.Error(), "empty fileHash")
+	t.Contains(err.Error(), "empty content")
 }
 
 func TestCreateDocumentsSingleFile(t *testing.T) {
@@ -194,7 +194,7 @@ func testCreateDocumentsSingleFileEncode(enc encoder.Encoder) suite.TestingSuite
 
 		cid := currency.CurrencyID("SHOWME")
 
-		filehash := FileHash("ABCD")
+		content := Content("ABCD")
 		documentid := currency.NewBig(0)
 		signcode0 := "user0"
 		title := "title01"
@@ -202,7 +202,7 @@ func testCreateDocumentsSingleFileEncode(enc encoder.Encoder) suite.TestingSuite
 		signcode1 := "user1"
 		signcode2 := "user2"
 		// FileData for document
-		item := NewCreateDocumentsItemSingleFile(filehash, documentid, signcode0, title, size, []base.Address{signer0, signer1}, []string{signcode1, signcode2}, cid)
+		item := NewCreateDocumentsItemSingleFile(content, documentid, signcode0, title, size, []base.Address{signer0, signer1}, []string{signcode1, signcode2}, cid)
 		fact := NewCreateDocumentsFact(util.UUID().Bytes(), sender, []CreateDocumentsItem{item})
 
 		var fs []operation.FactSign
@@ -233,7 +233,7 @@ func testCreateDocumentsSingleFileEncode(enc encoder.Encoder) suite.TestingSuite
 			a := fact.Items()[i]
 			b := ufact.Items()[i]
 
-			t.True(a.FileHash().Equal(b.FileHash()))
+			t.True(a.Content().Equal(b.Content()))
 			for i := range a.Signers() {
 				t.Equal(a.Signers()[i].Bytes(), b.Signers()[i].Bytes())
 			}

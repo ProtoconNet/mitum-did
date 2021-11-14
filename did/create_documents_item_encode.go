@@ -10,7 +10,7 @@ import (
 func (it *BaseCreateDocumentsItem) unpack(
 	enc encoder.Encoder,
 	ht hint.Hint,
-	bfh string,
+	bct string,
 	bdi currency.Big,
 	bsc string,
 	btl string,
@@ -32,7 +32,7 @@ func (it *BaseCreateDocumentsItem) unpack(
 		}
 	}
 	it.signers = signers
-	it.fileHash = FileHash(bfh)
+	it.content = Content(bct)
 	it.documentid = bdi
 	it.signcode = bsc
 	it.title = btl

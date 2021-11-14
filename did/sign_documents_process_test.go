@@ -19,7 +19,7 @@ type testSignDocumentsOperations struct {
 	baseTestOperationProcessor
 	cid       currency.CurrencyID
 	docid     currency.Big
-	fh        FileHash
+	ct        Content
 	fee       currency.Big
 	signcode0 string
 	title     string
@@ -30,7 +30,7 @@ type testSignDocumentsOperations struct {
 func (t *testSignDocumentsOperations) SetupSuite() {
 	t.cid = currency.CurrencyID("SHOWME")
 	t.docid = currency.NewBig(0)
-	t.fh = FileHash("ABCD")
+	t.ct = Content("ABCD")
 	t.fee = currency.NewBig(3)
 	t.signcode0 = "user0"
 	t.title = "title01"
@@ -85,7 +85,7 @@ func (t *testSignDocumentsOperations) newSignDocument(
 
 func (t *testSignDocumentsOperations) newTestDocumentData(ca base.Address, ga base.Address) DocumentData {
 	var doc DocumentData
-	info := DocInfo{idx: t.docid, filehash: t.fh}
+	info := DocInfo{idx: t.docid, content: t.ct}
 
 	if ga == nil {
 		doc = NewDocumentData(info, ca, t.signcode0, t.title, t.size, []DocSign{})
@@ -154,7 +154,7 @@ func (t *testSignDocumentsOperations) TestNormalCase() {
 	t.Equal(t.fee, sb.(currency.AmountState).Fee())
 
 	ndd, _ := StateDocumentDataValue(dds)
-	t.True(ndd.FileHash().Equal(t.fh))
+	t.True(ndd.Content().Equal(t.ct))
 	t.True(ndd.Creator().Equal(ca.Address))
 	t.True(ndd.Signers()[0].Address().Equal(sa.Address))
 	t.True(ndd.Signers()[0].Signed() == true)
@@ -273,10 +273,10 @@ func (t *testSignDocumentsOperations) TestMultipleItemsWithFee() {
 	ca, stb := t.newAccount(true, []currency.Amount{currency.NewAmount(currency.NewBig(0), cid0)})
 
 	dd0 := t.newTestDocumentData(ca.Address, sa.Address)
-	dd1 := NewDocumentData(DocInfo{idx: currency.NewBig(1), filehash: FileHash("EFGH")}, ca.Address, t.signcode0, t.title, t.size, []DocSign{{address: sa.Address, signed: false}})
+	dd1 := NewDocumentData(DocInfo{idx: currency.NewBig(1), content: Content("EFGH")}, ca.Address, t.signcode0, t.title, t.size, []DocSign{{address: sa.Address, signed: false}})
 	sts0 := t.newStateDocument(ca.Address, dd0)
 	dinv0, _ := StateDocumentsValue(sts0[0])
-	err := dinv0.Append(DocInfo{idx: currency.NewBig(1), filehash: dd1.FileHash()})
+	err := dinv0.Append(DocInfo{idx: currency.NewBig(1), content: dd1.Content()})
 	// sts0[1] = nst
 	sts1 := t.newStateDocument(ca.Address, dd1)
 	nst, _ := SetStateDocumentsValue(sts1[0], dinv0)
@@ -335,10 +335,10 @@ func (t *testSignDocumentsOperations) TestInsufficientMultipleItemsWithFee() {
 	ca, stb := t.newAccount(true, []currency.Amount{currency.NewAmount(currency.NewBig(0), cid0)})
 
 	dd0 := t.newTestDocumentData(ca.Address, sa.Address)
-	dd1 := NewDocumentData(DocInfo{idx: currency.NewBig(1), filehash: FileHash("EFGH")}, ca.Address, t.signcode0, t.title, t.size, []DocSign{{address: sa.Address, signed: false}})
+	dd1 := NewDocumentData(DocInfo{idx: currency.NewBig(1), content: Content("EFGH")}, ca.Address, t.signcode0, t.title, t.size, []DocSign{{address: sa.Address, signed: false}})
 	sts0 := t.newStateDocument(ca.Address, dd0)
 	dinv0, _ := StateDocumentsValue(sts0[0])
-	err := dinv0.Append(DocInfo{idx: currency.NewBig(1), filehash: dd1.FileHash()})
+	err := dinv0.Append(DocInfo{idx: currency.NewBig(1), content: dd1.Content()})
 	// sts0[1] = nst
 	sts1 := t.newStateDocument(ca.Address, dd1)
 	nst, _ := SetStateDocumentsValue(sts1[0], dinv0)
@@ -386,10 +386,10 @@ func (t *testSignDocumentsOperations) TestSameSenders() {
 	ca, stb := t.newAccount(true, []currency.Amount{currency.NewAmount(currency.NewBig(0), cid0)})
 
 	dd0 := t.newTestDocumentData(ca.Address, sa.Address)
-	dd1 := NewDocumentData(DocInfo{idx: currency.NewBig(1), filehash: FileHash("EFGH")}, ca.Address, t.signcode0, t.title, t.size, []DocSign{{address: sa.Address, signed: false}})
+	dd1 := NewDocumentData(DocInfo{idx: currency.NewBig(1), content: Content("EFGH")}, ca.Address, t.signcode0, t.title, t.size, []DocSign{{address: sa.Address, signed: false}})
 	sts0 := t.newStateDocument(ca.Address, dd0)
 	dinv0, _ := StateDocumentsValue(sts0[0])
-	err := dinv0.Append(DocInfo{idx: currency.NewBig(1), filehash: dd1.FileHash()})
+	err := dinv0.Append(DocInfo{idx: currency.NewBig(1), content: dd1.Content()})
 	// sts0[1] = nst
 	sts1 := t.newStateDocument(ca.Address, dd1)
 	nst, _ := SetStateDocumentsValue(sts1[0], dinv0)

@@ -19,7 +19,7 @@ type CreateDocumentCommand struct {
 	*BaseCommand
 	currencycmds.OperationFlags
 	Sender     currencycmds.AddressFlag    `arg:"" name:"sender" help:"sender address" required:""`
-	FileHash   string                      `arg:"" name:"filehash" help:"filehash" required:""`
+	Content	   string                      `arg:"" name:"content" help:"content" required:""`
 	Signcode   string                      `arg:"" name:"signcode" help:"signcode" required:""`
 	DocumentId currencycmds.BigFlag        `arg:"" name:"documentid" help:"document id" required:""`
 	Title      string                      `arg:"" name:"title" help:"title" required:""`
@@ -111,7 +111,7 @@ func (cmd *CreateDocumentCommand) createOperation() (operation.Operation, error)
 	}
 
 	item := did.NewCreateDocumentsItemSingleFile(
-		did.FileHash(cmd.FileHash),
+		did.Content(cmd.Content),
 		cmd.DocumentId.Big,
 		cmd.Signcode,
 		cmd.Title,

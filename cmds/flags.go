@@ -10,22 +10,22 @@ import (
 	"github.com/spikeekips/mitum/util/hint"
 )
 
-type FileHashFlag struct {
-	FH did.FileHash
+type ContentFlag struct {
+	CT did.Content
 }
 
-func (v *FileHashFlag) UnmarshalText(b []byte) error {
-	fh := did.FileHash(string(b))
-	if err := fh.IsValid(nil); err != nil {
+func (v *ContentFlag) UnmarshalText(b []byte) error {
+	ct := did.Content(string(b))
+	if err := ct.IsValid(nil); err != nil {
 		return err
 	}
-	v.FH = fh
+	v.CT = ct
 
 	return nil
 }
 
-func (v *FileHashFlag) String() string {
-	return v.FH.String()
+func (v *ContentFlag) String() string {
+	return v.CT.String()
 }
 
 type DocSignFlag struct {

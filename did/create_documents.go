@@ -25,7 +25,7 @@ type CreateDocumentsItem interface {
 	hint.Hinter
 	isvalid.IsValider
 	Bytes() []byte
-	FileHash() FileHash
+	Content() Content
 	DocumentId() currency.Big
 	Signcode() string
 	Title() string
@@ -100,11 +100,11 @@ func (fact CreateDocumentsFact) IsValid([]byte) error {
 		if err := fact.items[i].IsValid(nil); err != nil {
 			return err
 		}
-		_, found := fhmap[fact.items[i].FileHash().String()]
+		_, found := fhmap[fact.items[i].Content().String()]
 		if found {
-			return errors.Errorf("duplicated filehash, %v", fact.items[i].FileHash())
+			return errors.Errorf("duplicated content, %v", fact.items[i].Content())
 		}
-		fhmap[fact.items[i].FileHash().String()] = true
+		fhmap[fact.items[i].Content().String()] = true
 	}
 
 	if !fact.h.Equal(fact.GenerateHash()) {
