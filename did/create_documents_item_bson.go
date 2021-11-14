@@ -1,4 +1,4 @@
-package blocksign // nolint:dupl
+package did // nolint:dupl
 
 import (
 	"github.com/spikeekips/mitum-currency/currency"

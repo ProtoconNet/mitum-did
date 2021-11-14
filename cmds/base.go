@@ -10,6 +10,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/ProtoconNet/mitum-did/did"
+
 	"gopkg.in/yaml.v3"
 
 	"github.com/spikeekips/mitum/base"
@@ -144,17 +145,17 @@ func AttachProposalProcessor(
 	nodepool *network.Nodepool,
 	suffrage base.Suffrage,
 	cp *currency.CurrencyPool,
-) (*blocksign.OperationProcessor, error) {
-	opr := blocksign.NewOperationProcessor(cp)
+) (*did.OperationProcessor, error) {
+	opr := did.NewOperationProcessor(cp)
 	if _, err := opr.SetProcessor(currency.CreateAccounts{}, currency.NewCreateAccountsProcessor(cp)); err != nil {
 		return nil, err
 	} else if _, err := opr.SetProcessor(currency.KeyUpdater{}, currency.NewKeyUpdaterProcessor(cp)); err != nil {
 		return nil, err
 	} else if _, err := opr.SetProcessor(currency.Transfers{}, currency.NewTransfersProcessor(cp)); err != nil {
 		return nil, err
-	} else if _, err := opr.SetProcessor(blocksign.CreateDocuments{}, blocksign.NewCreateDocumentsProcessor(cp)); err != nil {
+	} else if _, err := opr.SetProcessor(did.CreateDocuments{}, did.NewCreateDocumentsProcessor(cp)); err != nil {
 		return nil, err
-	} else if _, err := opr.SetProcessor(blocksign.SignDocuments{}, blocksign.NewSignDocumentsProcessor(cp)); err != nil {
+	} else if _, err := opr.SetProcessor(did.SignDocuments{}, did.NewSignDocumentsProcessor(cp)); err != nil {
 		return nil, err
 	}
 
@@ -188,7 +189,7 @@ func AttachProposalProcessor(
 	return opr, nil
 }
 
-func InitializeProposalProcessor(ctx context.Context, opr *blocksign.OperationProcessor) (context.Context, error) {
+func InitializeProposalProcessor(ctx context.Context, opr *did.OperationProcessor) (context.Context, error) {
 	var oprs *hint.Hintmap
 	if err := process.LoadOperationProcessorsContextValue(ctx, &oprs); err != nil {
 		if !errors.Is(err, util.ContextValueNotFoundError) {
@@ -208,8 +209,8 @@ func InitializeProposalProcessor(ctx context.Context, opr *blocksign.OperationPr
 		currency.Transfers{},
 		currency.CurrencyPolicyUpdater{},
 		currency.CurrencyRegister{},
-		blocksign.CreateDocuments{},
-		blocksign.SignDocuments{},
+		did.CreateDocuments{},
+		did.SignDocuments{},
 	} {
 		if err := oprs.Add(hinter, opr); err != nil {
 			return ctx, err

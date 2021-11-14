@@ -11,11 +11,11 @@ import (
 )
 
 type FileHashFlag struct {
-	FH blocksign.FileHash
+	FH did.FileHash
 }
 
 func (v *FileHashFlag) UnmarshalText(b []byte) error {
-	fh := blocksign.FileHash(string(b))
+	fh := did.FileHash(string(b))
 	if err := fh.IsValid(nil); err != nil {
 		return err
 	}

@@ -13,12 +13,12 @@ var (
 )
 
 type DocumentValue struct {
-	doc    blocksign.DocumentData
+	doc    did.DocumentData
 	height base.Height
 }
 
 func NewDocumentValue(
-	doc blocksign.DocumentData,
+	doc did.DocumentData,
 	height base.Height,
 ) DocumentValue {
 
@@ -32,7 +32,7 @@ func (dv DocumentValue) Hint() hint.Hint {
 	return DocumentValueHint
 }
 
-func (dv DocumentValue) Document() blocksign.DocumentData {
+func (dv DocumentValue) Document() did.DocumentData {
 	return dv.doc
 }
 

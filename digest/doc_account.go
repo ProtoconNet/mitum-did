@@ -103,7 +103,7 @@ func (doc DocumentsDoc) MarshalBSON() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	address := doc.st.Key()[:len(doc.st.Key())-len(blocksign.StateKeyDocumentsSuffix)]
+	address := doc.st.Key()[:len(doc.st.Key())-len(did.StateKeyDocumentsSuffix)]
 	m["address"] = address
 	m["height"] = doc.st.Height()
 

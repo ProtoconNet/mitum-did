@@ -99,19 +99,19 @@ func (cmd *CreateDocumentCommand) parseFlags() error {
 }
 
 func (cmd *CreateDocumentCommand) createOperation() (operation.Operation, error) { // nolint:dupl
-	var items []blocksign.CreateDocumentsItem
+	var items []did.CreateDocumentsItem
 	if i, err := loadOperations(cmd.Seal.Bytes(), cmd.NetworkID.NetworkID()); err != nil {
 		return nil, err
 	} else {
 		for j := range i {
-			if t, ok := i[j].(blocksign.CreateDocuments); ok {
-				items = t.Fact().(blocksign.CreateDocumentsFact).Items()
+			if t, ok := i[j].(did.CreateDocuments); ok {
+				items = t.Fact().(did.CreateDocumentsFact).Items()
 			}
 		}
 	}
 
-	item := blocksign.NewCreateDocumentsItemSingleFile(
-		blocksign.FileHash(cmd.FileHash),
+	item := did.NewCreateDocumentsItemSingleFile(
+		did.FileHash(cmd.FileHash),
 		cmd.DocumentId.Big,
 		cmd.Signcode,
 		cmd.Title,
@@ -127,7 +127,7 @@ func (cmd *CreateDocumentCommand) createOperation() (operation.Operation, error)
 		items = append(items, item)
 	}
 
-	fact := blocksign.NewCreateDocumentsFact([]byte(cmd.Token), cmd.sender, items)
+	fact := did.NewCreateDocumentsFact([]byte(cmd.Token), cmd.sender, items)
 
 	var fs []operation.FactSign
 	if sig, err := operation.NewFactSignature(cmd.Privatekey, fact, cmd.NetworkID.NetworkID()); err != nil {
@@ -136,7 +136,7 @@ func (cmd *CreateDocumentCommand) createOperation() (operation.Operation, error)
 		fs = append(fs, operation.NewBaseFactSign(cmd.Privatekey.Publickey(), sig))
 	}
 
-	if op, err := blocksign.NewCreateDocuments(fact, fs, cmd.Memo); err != nil {
+	if op, err := did.NewCreateDocuments(fact, fs, cmd.Memo); err != nil {
 		return nil, errors.Errorf("failed to create create-account operation: %q", err)
 	} else {
 		return op, nil

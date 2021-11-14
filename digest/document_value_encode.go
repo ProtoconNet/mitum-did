@@ -9,7 +9,7 @@ import (
 func (dv *DocumentValue) unpack(enc encoder.Encoder, bdm []byte, height base.Height) error {
 
 	if bdm != nil {
-		i, err := blocksign.DecodeDocumentData(bdm, enc)
+		i, err := did.DecodeDocumentData(bdm, enc)
 		if err != nil {
 			return err
 		}

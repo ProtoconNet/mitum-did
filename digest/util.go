@@ -20,14 +20,14 @@ import (
 	"github.com/spikeekips/mitum/util/valuehash"
 )
 
-func IsDocumentState(st state.State) (blocksign.DocumentData, bool, error) {
-	if !blocksign.IsStateDocumentDataKey(st.Key()) {
-		return blocksign.DocumentData{}, false, nil
+func IsDocumentState(st state.State) (did.DocumentData, bool, error) {
+	if !did.IsStateDocumentDataKey(st.Key()) {
+		return did.DocumentData{}, false, nil
 	}
 
-	doc, err := blocksign.StateDocumentDataValue(st)
+	doc, err := did.StateDocumentDataValue(st)
 	if err != nil {
-		return blocksign.DocumentData{}, false, err
+		return did.DocumentData{}, false, err
 	}
 	return doc, true, nil
 }

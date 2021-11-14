@@ -1,4 +1,4 @@
-package blocksign // nolint: dupl
+package did // nolint: dupl
 
 import (
 	"go.mongodb.org/mongo-driver/bson"

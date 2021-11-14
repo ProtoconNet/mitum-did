@@ -681,9 +681,9 @@ func (st *Database) balance(a base.Address) ([]currency.Amount, base.Height, bas
 }
 
 // documentList return document invetory by address
-func (st *Database) documentList(a base.Address) (blocksign.DocumentInventory, base.Height, base.Height, error) {
+func (st *Database) documentList(a base.Address) (did.DocumentInventory, base.Height, base.Height, error) {
 	var lastHeight, previousHeight base.Height = base.NilHeight, base.NilHeight
-	doc := blocksign.DocumentInventory{}
+	doc := did.DocumentInventory{}
 	filter := util.NewBSONFilter("address", currency.StateAddressKeyPrefix(a))
 	q := filter.D()
 	var sta state.State
@@ -703,13 +703,13 @@ func (st *Database) documentList(a base.Address) (blocksign.DocumentInventory, b
 	); err != nil {
 		if errors.Is(err, util.NotFoundError) {
 
-			return blocksign.NewDocumentInventory([]blocksign.DocInfo{}), lastHeight, previousHeight, nil
+			return did.NewDocumentInventory([]did.DocInfo{}), lastHeight, previousHeight, nil
 		}
 	}
 
-	i, err := blocksign.StateDocumentsValue(sta)
+	i, err := did.StateDocumentsValue(sta)
 	if err != nil {
-		return blocksign.DocumentInventory{}, lastHeight, previousHeight, err
+		return did.DocumentInventory{}, lastHeight, previousHeight, err
 	}
 	doc = i
 

@@ -10,8 +10,8 @@ import (
 
 type DocumentValueJSONPacker struct {
 	jsonenc.HintedHead
-	DM blocksign.DocumentData `json:"document"`
-	HT base.Height            `json:"height"`
+	DM did.DocumentData `json:"document"`
+	HT base.Height      `json:"height"`
 }
 
 func (va DocumentValue) MarshalJSON() ([]byte, error) {

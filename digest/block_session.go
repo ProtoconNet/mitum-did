@@ -210,14 +210,14 @@ func (bs *BlockSession) prepareAccounts() error {
 			}
 			balanceModels = append(balanceModels, j...)
 
-		case blocksign.IsStateDocumentDataKey(st.Key()):
+		case did.IsStateDocumentDataKey(st.Key()):
 			if j, err := bs.handleDocumentDataState(st); err != nil {
 				return err
 			} else {
 
 				documentModels = append(documentModels, j...)
 			}
-		case blocksign.IsStateDocumentsKey(st.Key()):
+		case did.IsStateDocumentsKey(st.Key()):
 			if j, err := bs.handleDocumentsState(st); err != nil {
 				return err
 			} else {
@@ -261,7 +261,7 @@ func (bs *BlockSession) handleBalanceState(st state.State) ([]mongo.WriteModel, 
 }
 
 func (bs *BlockSession) handleDocumentDataState(st state.State) ([]mongo.WriteModel, error) {
-	doc, err := blocksign.StateDocumentDataValue(st)
+	doc, err := did.StateDocumentDataValue(st)
 	if err != nil {
 		return nil, err
 	}

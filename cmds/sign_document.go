@@ -79,18 +79,18 @@ func (cmd *SignDocumentCommand) parseFlags() error {
 }
 
 func (cmd *SignDocumentCommand) createOperation() (operation.Operation, error) { // nolint:dupl
-	var items []blocksign.SignDocumentItem
+	var items []did.SignDocumentItem
 	if i, err := loadOperations(cmd.Seal.Bytes(), cmd.NetworkID.NetworkID()); err != nil {
 		return nil, err
 	} else {
 		for j := range i {
-			if t, ok := i[j].(blocksign.SignDocuments); ok {
-				items = t.Fact().(blocksign.SignDocumentsFact).Items()
+			if t, ok := i[j].(did.SignDocuments); ok {
+				items = t.Fact().(did.SignDocumentsFact).Items()
 			}
 		}
 	}
 
-	item := blocksign.NewSignDocumentsItemSingleFile(cmd.DocId.Big, cmd.owner, cmd.Currency.CID)
+	item := did.NewSignDocumentsItemSingleFile(cmd.DocId.Big, cmd.owner, cmd.Currency.CID)
 
 	if err := item.IsValid(nil); err != nil {
 		return nil, err
@@ -98,7 +98,7 @@ func (cmd *SignDocumentCommand) createOperation() (operation.Operation, error) {
 		items = append(items, item)
 	}
 
-	fact := blocksign.NewSignDocumentsFact([]byte(cmd.Token), cmd.sender, items)
+	fact := did.NewSignDocumentsFact([]byte(cmd.Token), cmd.sender, items)
 
 	var fs []operation.FactSign
 	if sig, err := operation.NewFactSignature(cmd.Privatekey, fact, cmd.NetworkID.NetworkID()); err != nil {
@@ -107,7 +107,7 @@ func (cmd *SignDocumentCommand) createOperation() (operation.Operation, error) {
 		fs = append(fs, operation.NewBaseFactSign(cmd.Privatekey.Publickey(), sig))
 	}
 
-	if op, err := blocksign.NewSignDocuments(fact, fs, cmd.Memo); err != nil {
+	if op, err := did.NewSignDocuments(fact, fs, cmd.Memo); err != nil {
 		return nil, errors.Wrap(err, "failed to create sign-document operation")
 	} else {
 		return op, nil

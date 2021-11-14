@@ -1,4 +1,4 @@
-package blocksign
+package did
 
 import (
 	"bytes"

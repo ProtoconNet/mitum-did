@@ -18,7 +18,7 @@ type DocumentDoc struct {
 
 func NewDocumentDoc(
 	enc encoder.Encoder,
-	doc blocksign.DocumentData,
+	doc did.DocumentData,
 	height base.Height,
 ) (DocumentDoc, error) {
 

@@ -1,6 +1,6 @@
 // +build test
 
-package blocksign
+package did
 
 import (
 	"github.com/spikeekips/mitum-currency/currency"

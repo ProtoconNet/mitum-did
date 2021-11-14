@@ -36,7 +36,7 @@ func (va *AccountValue) unpack(enc encoder.Encoder, bac []byte, bl []byte, dm []
 
 	if hinter, err := enc.Decode(dm); err != nil {
 		return err
-	} else if k, ok := hinter.(blocksign.DocumentInventory); !ok {
+	} else if k, ok := hinter.(did.DocumentInventory); !ok {
 		return errors.Errorf("not DocumentInventory: %T", hinter)
 	} else {
 		va.document = k
