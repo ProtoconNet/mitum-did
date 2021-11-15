@@ -69,8 +69,6 @@ func (bl Builder) FactTemplate(ht hint.Hint) (Hal, error) {
 		return bl.templateCurrencyPolicyUpdaterFact(), nil
 	case did.CreateDocumentsType:
 		return bl.templateCreateDocumentsFact(), nil
-	case did.SignDocumentsType:
-		return bl.templateSignDocumentsFact(), nil
 	default:
 		return nil, errors.Errorf("unknown operation, %q", ht)
 	}
@@ -199,27 +197,6 @@ func (Builder) templateCreateDocumentsFact() Hal {
 	})
 }
 
-func (Builder) templateSignDocumentsFact() Hal {
-
-	fact := did.NewSignDocumentsFact(
-		templateToken,
-		templateSender,
-		[]did.SignDocumentItem{did.NewSignDocumentsItemSingleFile(
-			templateId,
-			templateOwner,
-			templateCurrencyID,
-		)},
-	)
-
-	hal := NewBaseHal(fact, HalLink{})
-	return hal.AddExtras("default", map[string]interface{}{
-		"token":     templateToken,
-		"sender":    templateSender,
-		"items.big": templateBig,
-		"currency":  templateCurrencyID,
-	})
-}
-
 func (bl Builder) BuildFact(b []byte) (Hal, error) {
 	var fact base.Fact
 	if hinter, err := bl.enc.Decode(b); err != nil {
@@ -243,8 +220,6 @@ func (bl Builder) BuildFact(b []byte) (Hal, error) {
 		return bl.buildFactCurrencyPolicyUpdater(t)
 	case did.CreateDocumentsFact:
 		return bl.buildFactCreateDocuments(t)
-	case did.SignDocumentsFact:
-		return bl.buildFactSignDocuments(t)
 	default:
 		return nil, errors.Errorf("unknown fact, %T", fact)
 	}
@@ -332,54 +307,6 @@ func (bl Builder) buildFactCreateDocuments(fact did.CreateDocumentsFact) (Hal, e
 	var hal Hal
 	hal = NewBaseHal(nil, HalLink{})
 	op, err := did.NewCreateDocuments(
-		nfact,
-		[]operation.FactSign{
-			operation.RawBaseFactSign(templatePublickey, templateSignature, templateSignedAt),
-		},
-		"",
-	)
-	if err != nil {
-		return nil, err
-	}
-	hal = hal.SetInterface(op)
-
-	return hal.
-		AddExtras("default", map[string]interface{}{
-			"fact_signs.signer":    templatePublickey,
-			"fact_signs.signature": templateSignature,
-		}).
-		AddExtras("signature_base", operation.NewBytesForFactSignature(nfact, bl.networkID)), nil
-}
-
-func (bl Builder) buildFactSignDocuments(fact did.SignDocumentsFact) (Hal, error) {
-	token, err := bl.checkToken(fact.Token())
-	if err != nil {
-		return nil, err
-	}
-
-	items := make([]did.SignDocumentItem, len(fact.Items()))
-	for i := range fact.Items() {
-		item := fact.Items()[i]
-		if (item.DocumentId() == currency.Big{}) {
-			return nil, errors.Errorf("empty documentid")
-		}
-
-		items[i] = did.NewSignDocumentsItemSingleFile(
-			item.DocumentId(),
-			item.Owner(),
-			item.Currency(),
-		)
-	}
-
-	nfact := did.NewSignDocumentsFact(token, fact.Sender(), items)
-	nfact = nfact.Rebuild()
-	if err = bl.isValidFactSignDocuments(nfact); err != nil {
-		return nil, err
-	}
-
-	var hal Hal
-	hal = NewBaseHal(nil, HalLink{})
-	op, err := did.NewSignDocuments(
 		nfact,
 		[]operation.FactSign{
 			operation.RawBaseFactSign(templatePublickey, templateSignature, templateSignedAt),
@@ -655,28 +582,6 @@ func (Builder) isValidFactCreateDocuments(fact did.CreateDocumentsFact) error {
 	return nil
 }
 
-func (Builder) isValidFactSignDocuments(fact did.SignDocumentsFact) error {
-	if err := fact.IsValid(nil); err != nil {
-		return err
-	}
-
-	if bytes.Equal(fact.Token(), templateToken) {
-		return errors.Errorf("Please set token; token same with template default")
-	}
-
-	if fact.Sender().Equal(templateSender) {
-		return errors.Errorf("Please set sender; sender is same with template default")
-	}
-
-	for i := range fact.Items() {
-		if same := fact.Items()[i].Owner().Equal(templateOwner); same {
-			return errors.Errorf("Please set owner; owner is same with template default")
-		}
-	}
-
-	return nil
-}
-
 func (bl Builder) BuildOperation(b []byte) (Hal, error) {
 	var op operation.Operation
 	if hinter, err := bl.enc.Decode(b); err != nil {
@@ -703,8 +608,6 @@ func (bl Builder) BuildOperation(b []byte) (Hal, error) {
 			hal, err = bl.buildCurrencyPolicyUpdater(t)
 		case did.CreateDocuments:
 			hal, err = bl.buildCreateDocumets(t)
-		case did.SignDocuments:
-			hal, err = bl.buildSignDocumets(t)
 		default:
 			return errors.Errorf("unknown operation.Operation, %T", t)
 		}
@@ -811,20 +714,6 @@ func (bl Builder) buildCreateDocumets(op did.CreateDocuments) (Hal, error) {
 	} else if err := nop.IsValid(bl.networkID); err != nil {
 		return nil, err
 	} else if err := bl.isValidFactCreateDocuments(nop.Fact().(did.CreateDocumentsFact)); err != nil {
-		return nil, err
-	} else {
-		return NewBaseHal(nop, HalLink{}), nil
-	}
-}
-
-func (bl Builder) buildSignDocumets(op did.SignDocuments) (Hal, error) {
-	fs := bl.updateFactSigns(op.Signs())
-
-	if nop, err := did.NewSignDocuments(op.Fact().(did.SignDocumentsFact), fs, op.Memo); err != nil {
-		return nil, err
-	} else if err := nop.IsValid(bl.networkID); err != nil {
-		return nil, err
-	} else if err := bl.isValidFactSignDocuments(nop.Fact().(did.SignDocumentsFact)); err != nil {
 		return nil, err
 	} else {
 		return NewBaseHal(nop, HalLink{}), nil

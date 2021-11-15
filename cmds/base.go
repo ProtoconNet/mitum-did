@@ -155,8 +155,6 @@ func AttachProposalProcessor(
 		return nil, err
 	} else if _, err := opr.SetProcessor(did.CreateDocuments{}, did.NewCreateDocumentsProcessor(cp)); err != nil {
 		return nil, err
-	} else if _, err := opr.SetProcessor(did.SignDocuments{}, did.NewSignDocumentsProcessor(cp)); err != nil {
-		return nil, err
 	}
 
 	threshold, err := base.NewThreshold(uint(len(suffrage.Nodes())), policy.ThresholdRatio())
@@ -210,7 +208,6 @@ func InitializeProposalProcessor(ctx context.Context, opr *did.OperationProcesso
 		currency.CurrencyPolicyUpdater{},
 		currency.CurrencyRegister{},
 		did.CreateDocuments{},
-		did.SignDocuments{},
 	} {
 		if err := oprs.Add(hinter, opr); err != nil {
 			return ctx, err
