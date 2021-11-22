@@ -10,22 +10,22 @@ import (
 	"github.com/spikeekips/mitum/util/hint"
 )
 
-type ContentFlag struct {
-	CT did.Content
+type SummaryFlag struct {
+	SM did.Summary
 }
 
-func (v *ContentFlag) UnmarshalText(b []byte) error {
-	ct := did.Content(string(b))
-	if err := ct.IsValid(nil); err != nil {
+func (v *SummaryFlag) UnmarshalText(b []byte) error {
+	sm := did.Summary(string(b))
+	if err := sm.IsValid(nil); err != nil {
 		return err
 	}
-	v.CT = ct
+	v.SM = sm
 
 	return nil
 }
 
-func (v *ContentFlag) String() string {
-	return v.CT.String()
+func (v *SummaryFlag) String() string {
+	return v.SM.String()
 }
 
 type DocSignFlag struct {

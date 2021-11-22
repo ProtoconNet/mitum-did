@@ -25,13 +25,11 @@ type CreateDocumentsItem interface {
 	hint.Hinter
 	isvalid.IsValider
 	Bytes() []byte
-	Content() Content
+	Summary() Summary
 	DocumentId() currency.Big
 	Signcode() string
 	Title() string
 	Size() currency.Big
-	Signers() []base.Address
-	Signcodes() []string
 	Currency() currency.CurrencyID
 	Rebuild() CreateDocumentsItem
 }
@@ -100,11 +98,11 @@ func (fact CreateDocumentsFact) IsValid([]byte) error {
 		if err := fact.items[i].IsValid(nil); err != nil {
 			return err
 		}
-		_, found := fhmap[fact.items[i].Content().String()]
+		_, found := fhmap[fact.items[i].Summary().String()]
 		if found {
-			return errors.Errorf("duplicated content, %v", fact.items[i].Content())
+			return errors.Errorf("duplicated summary, %v", fact.items[i].Summary())
 		}
-		fhmap[fact.items[i].Content().String()] = true
+		fhmap[fact.items[i].Summary().String()] = true
 	}
 
 	if !fact.h.Equal(fact.GenerateHash()) {
@@ -126,26 +124,8 @@ func (fact CreateDocumentsFact) Items() []CreateDocumentsItem {
 	return fact.items
 }
 
-func (fact CreateDocumentsFact) Signers() []base.Address {
-	var as []base.Address
-	for i := range fact.items {
-		a := fact.items[i].Signers()
-		if len(a) > 0 {
-			as = append(as, a...)
-		}
-	}
-
-	return as
-}
-
 func (fact CreateDocumentsFact) Addresses() ([]base.Address, error) {
 	var as []base.Address
-
-	signers := fact.Signers()
-	if len(signers) > 0 {
-		copy(as, signers)
-	}
-
 	as = append(as, fact.Sender())
 
 	return as, nil

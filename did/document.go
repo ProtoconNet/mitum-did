@@ -80,12 +80,12 @@ func (doc DocumentData) GenerateHash() valuehash.Hash {
 }
 
 func (doc DocumentData) IsEmpty() bool {
-	return len(doc.info.Content()) < 1 || len(doc.title) < 1 || !doc.size.OverZero()
+	return len(doc.info.Summary()) < 1 || len(doc.title) < 1 || !doc.size.OverZero()
 }
 
 func (doc DocumentData) IsValid([]byte) error {
 	if err := isvalid.Check([]isvalid.IsValider{
-		doc.info.Content(),
+		doc.info.Summary(),
 		doc.creator,
 	}, nil, false); err != nil {
 		return errors.Wrap(err, "invalid document data")
@@ -94,8 +94,8 @@ func (doc DocumentData) IsValid([]byte) error {
 	return nil
 }
 
-func (doc DocumentData) Content() Content {
-	return doc.info.Content()
+func (doc DocumentData) Summary() Summary {
+	return doc.info.Summary()
 }
 
 func (doc DocumentData) SignCode() string {
@@ -133,7 +133,7 @@ func (doc DocumentData) Addresses() ([]base.Address, error) {
 func (doc DocumentData) String() string {
 
 	return fmt.Sprintf("%s:%s:%s:%s:%s",
-		doc.Content().String(),
+		doc.Summary().String(),
 		doc.info.String(),
 		doc.creator.String(),
 		doc.title,
@@ -142,7 +142,7 @@ func (doc DocumentData) String() string {
 
 func (doc DocumentData) Equal(b DocumentData) bool {
 
-	if doc.Content() != b.Content() {
+	if doc.Summary() != b.Summary() {
 		return false
 	}
 
@@ -169,25 +169,25 @@ func (doc DocumentData) WithData(info DocInfo, creator DocSign, signcode string,
 	return doc
 }
 
-type Content string
+type Summary string
 
-func (ct Content) Bytes() []byte {
-	return []byte(ct)
+func (sm Summary) Bytes() []byte {
+	return []byte(sm)
 }
 
-func (ct Content) String() string {
-	return string(ct)
+func (sm Summary) String() string {
+	return string(sm)
 }
 
-func (ct Content) IsValid([]byte) error {
-	if len(ct) < 1 {
-		return errors.Errorf("empty content")
+func (sm Summary) IsValid([]byte) error {
+	if len(sm) < 1 {
+		return errors.Errorf("empty summary")
 	}
 	return nil
 }
 
-func (ct Content) Equal(b Content) bool {
-	return ct == b
+func (sm Summary) Equal(b Summary) bool {
+	return sm == b
 }
 
 var (
@@ -354,30 +354,30 @@ var (
 
 type DocInfo struct {
 	idx     currency.Big
-	content Content
+	summary Summary
 }
 
-func NewDocInfo(idx int64, ct Content) DocInfo {
+func NewDocInfo(idx int64, sm Summary) DocInfo {
 	id := currency.NewBig(idx)
 	if !id.OverNil() {
 		return DocInfo{}
 	}
 	docInfo := DocInfo{
 		idx:     id,
-		content: ct,
+		summary: sm,
 	}
 	return docInfo
 }
 
-func MustNewDocInfo(idx int64, ct Content) DocInfo {
-	docInfo := NewDocInfo(idx, ct)
+func MustNewDocInfo(idx int64, sm Summary) DocInfo {
+	docInfo := NewDocInfo(idx, sm)
 	if err := docInfo.IsValid(nil); err != nil {
 		panic(err)
 	}
 	return docInfo
 }
 
-func NewDocInfoFromString(id string, ct string) (DocInfo, error) {
+func NewDocInfoFromString(id string, sm string) (DocInfo, error) {
 	i, ok := new(big.Int).SetString(id, 10)
 	if !ok {
 		return DocInfo{}, errors.Errorf("not proper DocInfo string, %q", id)
@@ -388,7 +388,7 @@ func NewDocInfoFromString(id string, ct string) (DocInfo, error) {
 	}
 	docInfo := DocInfo{
 		idx:     idx,
-		content: Content(ct),
+		summary: Summary(sm),
 	}
 	return docInfo, nil
 }
@@ -397,13 +397,13 @@ func (di DocInfo) Index() currency.Big {
 	return di.idx
 }
 
-func (di DocInfo) Content() Content {
-	return di.content
+func (di DocInfo) Summary() Summary {
+	return di.summary
 }
 
 func (di DocInfo) Bytes() []byte {
 
-	return util.ConcatBytesSlice(di.idx.Bytes(), di.content.Bytes())
+	return util.ConcatBytesSlice(di.idx.Bytes(), di.summary.Bytes())
 }
 
 func (di DocInfo) Hash() valuehash.Hash {
@@ -421,7 +421,7 @@ func (di DocInfo) Hint() hint.Hint {
 func (di DocInfo) IsValid([]byte) error {
 	if err := di.idx.IsValid(nil); err != nil {
 		return err
-	} else if err := di.content.IsValid(nil); err != nil {
+	} else if err := di.summary.IsValid(nil); err != nil {
 		return err
 	}
 
@@ -429,40 +429,40 @@ func (di DocInfo) IsValid([]byte) error {
 }
 
 func (di DocInfo) IsEmpty() bool {
-	return !di.idx.OverNil() || len(di.content) < 1
+	return !di.idx.OverNil() || len(di.summary) < 1
 }
 
 func (di DocInfo) String() string {
-	return fmt.Sprintf("%s:%s", di.idx.String(), di.content.String())
+	return fmt.Sprintf("%s:%s", di.idx.String(), di.summary.String())
 }
 
 func (di DocInfo) Equal(b DocInfo) bool {
-	return di.idx.Equal(b.idx) && di.content.Equal(b.content)
+	return di.idx.Equal(b.idx) && di.summary.Equal(b.summary)
 }
 
-func (di DocInfo) WithData(idx currency.Big, ct Content) DocInfo {
+func (di DocInfo) WithData(idx currency.Big, sm Summary) DocInfo {
 	di.idx = idx
-	di.content = ct
+	di.summary = sm
 	return di
 }
 
 type DocInfoJSONPacker struct {
 	jsonenc.HintedHead
 	ID currency.Big `json:"documentid"`
-	CT Content      `json:"content"`
+	SM Summary      `json:"summary"`
 }
 
 func (di DocInfo) MarshalJSON() ([]byte, error) {
 	return jsonenc.Marshal(DocInfoJSONPacker{
 		HintedHead: jsonenc.NewHintedHead(di.Hint()),
 		ID:         di.idx,
-		CT:         di.content,
+		SM:         di.summary,
 	})
 }
 
 type DocInfoJSONUnpacker struct {
 	ID currency.Big `json:"documentid"`
-	CT string       `json:"content"`
+	SM string       `json:"summary"`
 }
 
 func (di *DocInfo) UnpackJSON(b []byte, enc *jsonenc.Encoder) error {
@@ -472,14 +472,14 @@ func (di *DocInfo) UnpackJSON(b []byte, enc *jsonenc.Encoder) error {
 	}
 
 	di.idx = udi.ID
-	di.content = Content(udi.CT)
+	di.summary = Summary(udi.SM)
 
 	return nil
 }
 
 type DocInfoBSONPacker struct {
 	ID currency.Big `bson:"documentid"`
-	CT string       `bson:"content"`
+	SM string       `bson:"summary"`
 }
 
 func (di DocInfo) MarshalBSON() ([]byte, error) {
@@ -487,14 +487,14 @@ func (di DocInfo) MarshalBSON() ([]byte, error) {
 		bsonenc.NewHintedDoc(di.Hint()),
 		bson.M{
 			"documentid": di.idx,
-			"content":    di.content,
+			"summary":    di.summary,
 		}),
 	)
 }
 
 type DocInfoBSONUnpacker struct {
 	ID currency.Big `bson:"documentid"`
-	CT string       `bson:"content"`
+	SM string       `bson:"summary"`
 }
 
 func (di *DocInfo) UnmarshalBSON(b []byte) error {
@@ -504,7 +504,7 @@ func (di *DocInfo) UnmarshalBSON(b []byte) error {
 	}
 
 	di.idx = udi.ID
-	di.content = Content(udi.CT)
+	di.summary = Summary(udi.SM)
 
 	return nil
 }

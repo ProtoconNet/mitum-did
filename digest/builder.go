@@ -26,7 +26,7 @@ var (
 	templateBig              = currency.NewBig(-333)
 	templateSignedAtString   = "2020-10-08T07:53:26Z"
 	templateSignedAt         time.Time
-	templateContent          = did.Content("abcd")
+	templateSummary          = did.Summary("abcd")
 	templateSigncode         = "tigers"
 	templateTitle            = "my_document"
 	templateSize             = currency.NewBig(555)
@@ -177,13 +177,11 @@ func (Builder) templateCreateDocumentsFact() Hal {
 		templateToken,
 		templateSender,
 		[]did.CreateDocumentsItem{did.NewCreateDocumentsItemSingleFile(
-			templateContent,
+			templateSummary,
 			templateId,
 			templateSigncode,
 			templateTitle,
 			templateSize,
-			[]base.Address{templateSigner},
-			[]string{templateSignerSigncode},
 			templateCurrencyID,
 		)},
 	)
@@ -282,18 +280,16 @@ func (bl Builder) buildFactCreateDocuments(fact did.CreateDocumentsFact) (Hal, e
 	items := make([]did.CreateDocumentsItem, len(fact.Items()))
 	for i := range fact.Items() {
 		item := fact.Items()[i]
-		if len(item.Content()) < 1 {
-			return nil, errors.Errorf("empty Content")
+		if len(item.Summary()) < 1 {
+			return nil, errors.Errorf("empty Summary")
 		}
 
 		items[i] = did.NewCreateDocumentsItemSingleFile(
-			item.Content(),
+			item.Summary(),
 			item.DocumentId(),
 			item.Signcode(),
 			item.Title(),
 			item.Size(),
-			item.Signers(),
-			item.Signcodes(),
 			item.Currency(),
 		)
 	}
@@ -574,8 +570,8 @@ func (Builder) isValidFactCreateDocuments(fact did.CreateDocumentsFact) error {
 	}
 
 	for i := range fact.Items() {
-		if same := fact.Items()[i].Content().Equal(templateContent); same {
-			return errors.Errorf("Please set content; content is same with template default")
+		if same := fact.Items()[i].Summary().Equal(templateSummary); same {
+			return errors.Errorf("Please set summary; summary is same with template default")
 		}
 	}
 

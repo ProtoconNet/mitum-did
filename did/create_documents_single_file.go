@@ -2,7 +2,6 @@ package did
 
 import (
 	"github.com/spikeekips/mitum-currency/currency"
-	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/util/hint"
 )
 
@@ -17,24 +16,20 @@ type CreateDocumentsItemSingleFile struct {
 }
 
 func NewCreateDocumentsItemSingleFile(
-	ct Content,
+	sm Summary,
 	documentid currency.Big,
 	signcode, title string,
 	size currency.Big,
-	signers []base.Address,
-	signcodes []string,
 	cid currency.CurrencyID,
 ) CreateDocumentsItemSingleFile {
 	return CreateDocumentsItemSingleFile{
 		BaseCreateDocumentsItem: NewBaseCreateDocumentsItem(
 			CreateDocumentsItemSingleFileHint,
-			ct,
+			sm,
 			documentid,
 			signcode,
 			title,
 			size,
-			signers,
-			signcodes,
 			cid,
 		),
 	}

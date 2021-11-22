@@ -45,34 +45,10 @@ func (opp *CreateDocumentsItemProcessor) PreProcess(
 		opp.nds = st
 	}
 
-	// check duplicated signers address
-	msigners := map[string]bool{}
-	for i := range opp.item.Signers() {
-		_, found := msigners[opp.item.Signers()[i].String()]
-		if found {
-			return errors.Errorf("duplicated signer, %v", opp.item.Signers()[i])
-		}
-		msigners[opp.item.Signers()[i].String()] = true
-	}
-
 	// prepare doccInfo
 	opp.docInfo = DocInfo{
 		idx:      opp.item.DocumentId(),
-		content: opp.item.Content(),
-	}
-
-	// check sigenrs account existence
-	signers := opp.item.Signers()
-	for i := range signers {
-		switch _, found, err := getState(currency.StateKeyAccount(signers[i])); {
-		case err != nil:
-			return err
-		case !found:
-			return errors.Errorf("signer account not found, %q", signers[i])
-		}
-		if signers[i].Equal(opp.sender) {
-			return errors.Errorf("signer account is same with document creator, %q", signers[i])
-		}
+		summary: opp.item.Summary(),
 	}
 
 	return nil
@@ -84,12 +60,6 @@ func (opp *CreateDocumentsItemProcessor) Process(
 ) ([]state.State, error) {
 
 	sts := make([]state.State, 1)
-
-	// prepare signers from items
-	signers := make([]DocSign, len(opp.item.Signers()))
-	for i := range opp.item.Signers() {
-		signers[i] = NewDocSign(opp.item.Signers()[i], opp.item.Signcodes()[i], false)
-	}
 
 	// prepare document data
 	docData := DocumentData{

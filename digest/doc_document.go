@@ -55,7 +55,7 @@ func (doc DocumentDoc) MarshalBSON() ([]byte, error) {
 		return nil, err
 	}
 
-	m["content"] = doc.va.Document().Content()
+	m["summary"] = doc.va.Document().Summary()
 	m["documentid"] = doc.va.Document().Info().Index()
 	m["creator"] = currency.StateAddressKeyPrefix(doc.va.Document().Creator())
 	m["addresses"] = doc.addresses
