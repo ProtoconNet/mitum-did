@@ -12,7 +12,7 @@ func (it *BaseCreateDocumentsItem) unpack(
 	bsm string,
 	bdi currency.Big,
 	bsc string,
-	btl string,
+	bct string,
 	bsz currency.Big,
 	scid string,
 
@@ -22,7 +22,7 @@ func (it *BaseCreateDocumentsItem) unpack(
 	it.summary = Summary(bsm)
 	it.documentid = bdi
 	it.signcode = bsc
-	it.title = btl
+	it.content = bct
 	it.size = bsz
 	it.cid = currency.CurrencyID(scid)
 

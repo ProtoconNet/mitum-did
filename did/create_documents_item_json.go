@@ -10,7 +10,7 @@ type CreateDocumentsItemJSONPacker struct {
 	SM Summary             `json:"summary"`
 	DI currency.Big        `json:"documentid"`
 	SC string              `json:"signcode"`
-	TL string              `json:"title"`
+	CT string              `json:"content"`
 	SZ currency.Big        `json:"size"`
 	CI currency.CurrencyID `json:"currency"`
 }
@@ -21,7 +21,7 @@ func (it BaseCreateDocumentsItem) MarshalJSON() ([]byte, error) {
 		SM:         it.summary,
 		DI:         it.documentid,
 		SC:         it.signcode,
-		TL:         it.title,
+		CT:         it.content,
 		SZ:         it.size,
 		CI:         it.cid,
 	})
@@ -31,7 +31,7 @@ type CreateDocumentsItemJSONUnpacker struct {
 	SM string                `json:"summary"`
 	DI currency.Big          `json:"documentid"`
 	SC string                `json:"signcode"`
-	TL string                `json:"title"`
+	CT string                `json:"content"`
 	SZ currency.Big          `json:"size"`
 	CI string                `json:"currency"`
 }
@@ -47,5 +47,5 @@ func (it *BaseCreateDocumentsItem) UnpackJSON(b []byte, enc *jsonenc.Encoder) er
 		return err
 	}
 
-	return it.unpack(enc, ht.H, ucd.SM, ucd.DI, ucd.SC, ucd.TL, ucd.SZ, ucd.CI)
+	return it.unpack(enc, ht.H, ucd.SM, ucd.DI, ucd.SC, ucd.CT, ucd.SZ, ucd.CI)
 }

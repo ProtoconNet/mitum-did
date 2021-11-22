@@ -11,7 +11,7 @@ type DocumentJSONPacker struct {
 	jsonenc.HintedHead
 	DI DocInfo      `json:"documentinfo"`
 	CR DocSign      `json:"creator"`
-	TL string       `json:"title"`
+	CT string       `json:"content"`
 	SZ currency.Big `json:"size"`
 	SG []DocSign    `json:"signers"`
 }
@@ -21,7 +21,7 @@ func (doc DocumentData) MarshalJSON() ([]byte, error) {
 		HintedHead: jsonenc.NewHintedHead(doc.Hint()),
 		DI:         doc.info,
 		CR:         doc.creator,
-		TL:         doc.title,
+		CT:         doc.content,
 		SZ:         doc.size,
 	})
 }
@@ -29,7 +29,7 @@ func (doc DocumentData) MarshalJSON() ([]byte, error) {
 type DocumentJSONUnpacker struct {
 	DI json.RawMessage `json:"documentinfo"`
 	CR json.RawMessage `json:"creator"`
-	TL string          `json:"title"`
+	CT string          `json:"content"`
 	SZ currency.Big    `json:"size"`
 }
 
@@ -39,5 +39,5 @@ func (doc *DocumentData) UnpackJSON(b []byte, enc *jsonenc.Encoder) error {
 		return err
 	}
 
-	return doc.unpack(enc, udoc.DI, udoc.CR, udoc.TL, udoc.SZ)
+	return doc.unpack(enc, udoc.DI, udoc.CR, udoc.CT, udoc.SZ)
 }

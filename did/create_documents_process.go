@@ -65,7 +65,7 @@ func (opp *CreateDocumentsItemProcessor) Process(
 	docData := DocumentData{
 		info:    opp.docInfo,
 		creator: DocSign{address: opp.sender, signcode: opp.item.Signcode(), signed: true},
-		title:   opp.item.Title(),
+		content:   opp.item.Content(),
 		size:    opp.item.Size(),
 	}
 

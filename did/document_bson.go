@@ -12,7 +12,7 @@ func (doc DocumentData) MarshalBSON() ([]byte, error) {
 		bson.M{
 			"documentinfo": doc.info,
 			"creator":      doc.creator,
-			"title":        doc.title,
+			"content":        doc.content,
 			"size":         doc.size,
 		}),
 	)
@@ -21,7 +21,7 @@ func (doc DocumentData) MarshalBSON() ([]byte, error) {
 type DocumentBSONUnpacker struct {
 	DI bson.Raw     `bson:"documentinfo"`
 	CR bson.Raw     `bson:"creator"`
-	TL string       `bson:"title"`
+	CT string       `bson:"content"`
 	SZ currency.Big `bson:"size"`
 }
 
@@ -31,5 +31,5 @@ func (doc *DocumentData) UnpackBSON(b []byte, enc *bsonenc.Encoder) error {
 		return err
 	}
 
-	return doc.unpack(enc, udoc.DI, udoc.CR, udoc.TL, udoc.SZ)
+	return doc.unpack(enc, udoc.DI, udoc.CR, udoc.CT, udoc.SZ)
 }

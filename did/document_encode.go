@@ -11,7 +11,7 @@ func (doc *DocumentData) unpack(
 	enc encoder.Encoder,
 	di []byte,
 	cr []byte, // creator
-	tl string,
+	ct string,
 	sz currency.Big,
 ) error {
 
@@ -33,7 +33,7 @@ func (doc *DocumentData) unpack(
 		doc.creator = i
 	}
 
-	doc.title = tl
+	doc.content = ct
 	doc.size = sz
 
 	return nil

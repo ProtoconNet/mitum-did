@@ -288,7 +288,7 @@ func (bl Builder) buildFactCreateDocuments(fact did.CreateDocumentsFact) (Hal, e
 			item.Summary(),
 			item.DocumentId(),
 			item.Signcode(),
-			item.Title(),
+			item.Content(),
 			item.Size(),
 			item.Currency(),
 		)

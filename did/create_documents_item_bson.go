@@ -13,7 +13,7 @@ func (it BaseCreateDocumentsItem) MarshalBSON() ([]byte, error) {
 				"summary":   it.summary,
 				"documentid": it.documentid,
 				"signcode":   it.signcode,
-				"title":      it.title,
+				"content":      it.content,
 				"size":       it.size,
 				"currency":   it.cid,
 			}),
@@ -24,7 +24,7 @@ type CreateDocumentsItemBSONUnpacker struct {
 	SM string                `bson:"summary"`
 	DI currency.Big          `bson:"documentid"`
 	SC string                `bson:"signcode"`
-	TL string                `bson:"title"`
+	CT string                `bson:"content"`
 	SZ currency.Big          `bson:"size"`
 	CI string                `bson:"currency"`
 }
@@ -40,5 +40,5 @@ func (it *BaseCreateDocumentsItem) UnpackBSON(b []byte, enc *bsonenc.Encoder) er
 		return err
 	}
 
-	return it.unpack(enc, ht.H, ucd.SM, ucd.DI, ucd.SC, ucd.TL, ucd.SZ, ucd.CI)
+	return it.unpack(enc, ht.H, ucd.SM, ucd.DI, ucd.SC, ucd.CT, ucd.SZ, ucd.CI)
 }

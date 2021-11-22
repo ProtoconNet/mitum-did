@@ -12,7 +12,7 @@ type BaseCreateDocumentsItem struct {
 	summary    Summary
 	documentid currency.Big
 	signcode   string //creator signcode
-	title      string
+	content      string
 	size       currency.Big
 	cid        currency.CurrencyID
 }
@@ -20,7 +20,7 @@ type BaseCreateDocumentsItem struct {
 func NewBaseCreateDocumentsItem(ht hint.Hint,
 	summary Summary,
 	documentid currency.Big,
-	signcode, title string,
+	signcode, content string,
 	size currency.Big,
 	cid currency.CurrencyID) BaseCreateDocumentsItem {
 	return BaseCreateDocumentsItem{
@@ -28,7 +28,7 @@ func NewBaseCreateDocumentsItem(ht hint.Hint,
 		summary:   summary,
 		documentid: documentid,
 		signcode:   signcode,
-		title:      title,
+		content:      content,
 		size:       size,
 		cid:        cid,
 	}
@@ -43,7 +43,7 @@ func (it BaseCreateDocumentsItem) Bytes() []byte {
 	bs[0] = it.summary.Bytes()
 	bs[1] = it.documentid.Bytes()
 	bs[2] = []byte(it.signcode)
-	bs[3] = []byte(it.title)
+	bs[3] = []byte(it.content)
 	bs[4] = it.size.Bytes()
 	bs[5] = it.cid.Bytes()
 
@@ -82,8 +82,8 @@ func (it BaseCreateDocumentsItem) Signcode() string {
 	return it.signcode
 }
 
-func (it BaseCreateDocumentsItem) Title() string {
-	return it.title
+func (it BaseCreateDocumentsItem) Content() string {
+	return it.content
 }
 
 func (it BaseCreateDocumentsItem) Size() currency.Big {

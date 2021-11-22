@@ -28,7 +28,7 @@ type CreateDocumentsItem interface {
 	Summary() Summary
 	DocumentId() currency.Big
 	Signcode() string
-	Title() string
+	Content() string
 	Size() currency.Big
 	Currency() currency.CurrencyID
 	Rebuild() CreateDocumentsItem

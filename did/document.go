@@ -24,14 +24,14 @@ var (
 type DocumentData struct {
 	info    DocInfo
 	creator DocSign
-	title   string
+	content   string
 	size    currency.Big
 }
 
 func NewDocumentData(info DocInfo,
 	creator base.Address,
 	signcode string,
-	title string,
+	content string,
 	size currency.Big) DocumentData {
 	doc := DocumentData{
 		info: info,
@@ -40,15 +40,15 @@ func NewDocumentData(info DocInfo,
 			signcode: signcode,
 			signed:   true,
 		},
-		title:   title,
+		content:   content,
 		size:    size,
 	}
 
 	return doc
 }
 
-func MustNewDocumentData(info DocInfo, creator base.Address, signcode string, title string, size currency.Big) DocumentData {
-	doc := NewDocumentData(info, creator, signcode, title, size)
+func MustNewDocumentData(info DocInfo, creator base.Address, signcode string, content string, size currency.Big) DocumentData {
+	doc := NewDocumentData(info, creator, signcode, content, size)
 	if err := doc.IsValid(nil); err != nil {
 		panic(err)
 	}
@@ -65,7 +65,7 @@ func (doc DocumentData) Bytes() []byte {
 
 	bs[0] = doc.info.Bytes()
 	bs[1] = doc.creator.Bytes()
-	bs[2] = []byte(doc.title)
+	bs[2] = []byte(doc.content)
 	bs[3] = doc.size.Bytes()
 
 	return util.ConcatBytesSlice(bs...)
@@ -80,7 +80,7 @@ func (doc DocumentData) GenerateHash() valuehash.Hash {
 }
 
 func (doc DocumentData) IsEmpty() bool {
-	return len(doc.info.Summary()) < 1 || len(doc.title) < 1 || !doc.size.OverZero()
+	return len(doc.info.Summary()) < 1 || len(doc.content) < 1 || !doc.size.OverZero()
 }
 
 func (doc DocumentData) IsValid([]byte) error {
@@ -102,8 +102,8 @@ func (doc DocumentData) SignCode() string {
 	return doc.creator.signcode
 }
 
-func (doc DocumentData) Title() string {
-	return doc.title
+func (doc DocumentData) Content() string {
+	return doc.content
 }
 
 func (doc DocumentData) Size() currency.Big {
@@ -136,7 +136,7 @@ func (doc DocumentData) String() string {
 		doc.Summary().String(),
 		doc.info.String(),
 		doc.creator.String(),
-		doc.title,
+		doc.content,
 		doc.size)
 }
 
@@ -150,7 +150,7 @@ func (doc DocumentData) Equal(b DocumentData) bool {
 		return false
 	}
 
-	if doc.title != (b.title) {
+	if doc.content != (b.content) {
 		return false
 	}
 
@@ -161,10 +161,10 @@ func (doc DocumentData) Equal(b DocumentData) bool {
 	return true
 }
 
-func (doc DocumentData) WithData(info DocInfo, creator DocSign, signcode string, title string, size currency.Big, signers []DocSign) DocumentData {
+func (doc DocumentData) WithData(info DocInfo, creator DocSign, signcode string, content string, size currency.Big, signers []DocSign) DocumentData {
 	doc.info = info
 	doc.creator = creator
-	doc.title = title
+	doc.content = content
 	doc.size = size
 	return doc
 }

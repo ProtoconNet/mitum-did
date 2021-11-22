@@ -22,7 +22,7 @@ type CreateDocumentCommand struct {
 	Summary	   string                      `arg:"" name:"summary" help:"summary" required:""`
 	Signcode   string                      `arg:"" name:"signcode" help:"signcode" required:""`
 	DocumentId currencycmds.BigFlag        `arg:"" name:"documentid" help:"document id" required:""`
-	Title      string                      `arg:"" name:"title" help:"title" required:""`
+	Content      string                      `arg:"" name:"content" help:"content" required:""`
 	Size       currencycmds.BigFlag        `arg:"" name:"size" help:"size" required:""`
 	Currency   currencycmds.CurrencyIDFlag `arg:"" name:"currency" help:"currency id" required:""`
 	Signers    []DocSignFlag               `name:"signers" help:"signers for document (ex: \"<address>,<signcode>\")" sep:"@"`
@@ -96,7 +96,7 @@ func (cmd *CreateDocumentCommand) createOperation() (operation.Operation, error)
 		did.Summary(cmd.Summary),
 		cmd.DocumentId.Big,
 		cmd.Signcode,
-		cmd.Title,
+		cmd.Content,
 		cmd.Size.Big,
 		cmd.Currency.CID,
 	)
