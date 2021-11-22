@@ -1,10 +1,8 @@
 package did
 
 import (
-	"bytes"
 	"fmt"
 	"math/big"
-	"sort"
 
 	"github.com/pkg/errors"
 	"github.com/spikeekips/mitum-currency/currency"
@@ -28,15 +26,13 @@ type DocumentData struct {
 	creator DocSign
 	title   string
 	size    currency.Big
-	signers []DocSign
 }
 
 func NewDocumentData(info DocInfo,
 	creator base.Address,
 	signcode string,
 	title string,
-	size currency.Big,
-	signers []DocSign) DocumentData {
+	size currency.Big) DocumentData {
 	doc := DocumentData{
 		info: info,
 		creator: DocSign{
@@ -46,14 +42,13 @@ func NewDocumentData(info DocInfo,
 		},
 		title:   title,
 		size:    size,
-		signers: signers,
 	}
 
 	return doc
 }
 
-func MustNewDocumentData(info DocInfo, creator base.Address, signcode string, title string, size currency.Big, signers []DocSign) DocumentData {
-	doc := NewDocumentData(info, creator, signcode, title, size, signers)
+func MustNewDocumentData(info DocInfo, creator base.Address, signcode string, title string, size currency.Big) DocumentData {
+	doc := NewDocumentData(info, creator, signcode, title, size)
 	if err := doc.IsValid(nil); err != nil {
 		panic(err)
 	}
@@ -66,19 +61,12 @@ func (doc DocumentData) Hint() hint.Hint {
 }
 
 func (doc DocumentData) Bytes() []byte {
-	bs := make([][]byte, len(doc.signers)+4)
-
-	sort.Slice(doc.signers, func(i, j int) bool {
-		return bytes.Compare(doc.signers[i].Bytes(), doc.signers[j].Bytes()) < 0
-	})
+	bs := make([][]byte, 4)
 
 	bs[0] = doc.info.Bytes()
 	bs[1] = doc.creator.Bytes()
 	bs[2] = []byte(doc.title)
 	bs[3] = doc.size.Bytes()
-	for i := range doc.signers {
-		bs[i+3] = doc.signers[i].Bytes()
-	}
 
 	return util.ConcatBytesSlice(bs...)
 }
@@ -92,7 +80,7 @@ func (doc DocumentData) GenerateHash() valuehash.Hash {
 }
 
 func (doc DocumentData) IsEmpty() bool {
-	return len(doc.info.Content()) < 1 || len(doc.signers) < 1 || len(doc.title) < 1 || !doc.size.OverZero()
+	return len(doc.info.Content()) < 1 || len(doc.title) < 1 || !doc.size.OverZero()
 }
 
 func (doc DocumentData) IsValid([]byte) error {
@@ -102,15 +90,6 @@ func (doc DocumentData) IsValid([]byte) error {
 	}, nil, false); err != nil {
 		return errors.Wrap(err, "invalid document data")
 	}
-
-	for i := range doc.signers {
-		c := doc.signers[i]
-		if err := c.IsValid(nil); err != nil {
-			return err
-		}
-	}
-
-	// TODO : check owner and signer are not same
 
 	return nil
 }
@@ -139,19 +118,9 @@ func (doc DocumentData) Creator() base.Address {
 	return doc.creator.address
 }
 
-func (doc DocumentData) Signers() []DocSign {
-	return doc.signers
-}
-
 func (doc DocumentData) Addresses() ([]base.Address, error) {
 	addresses := make(map[base.Address]bool)
 	addresses[doc.creator.Address()] = true
-	for i := range doc.Signers() {
-		_, found := addresses[doc.Signers()[i].Address()]
-		if !found {
-			addresses[doc.Signers()[i].Address()] = true
-		}
-	}
 	result := make([]base.Address, len(addresses))
 	i := 0
 	for k := range addresses {
@@ -189,19 +158,6 @@ func (doc DocumentData) Equal(b DocumentData) bool {
 		return false
 	}
 
-	sort.Slice(doc.signers, func(i, j int) bool {
-		return bytes.Compare(doc.signers[i].Bytes(), doc.signers[j].Bytes()) < 0
-	})
-	sort.Slice(b.signers, func(i, j int) bool {
-		return bytes.Compare(b.signers[i].Bytes(), b.signers[j].Bytes()) < 0
-	})
-
-	for i := range doc.signers {
-		if !doc.signers[i].Equal(b.signers[i]) {
-			return false
-		}
-	}
-
 	return true
 }
 
@@ -210,7 +166,6 @@ func (doc DocumentData) WithData(info DocInfo, creator DocSign, signcode string,
 	doc.creator = creator
 	doc.title = title
 	doc.size = size
-	doc.signers = signers
 	return doc
 }
 

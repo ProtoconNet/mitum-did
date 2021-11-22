@@ -97,7 +97,6 @@ func (opp *CreateDocumentsItemProcessor) Process(
 		creator: DocSign{address: opp.sender, signcode: opp.item.Signcode(), signed: true},
 		title:   opp.item.Title(),
 		size:    opp.item.Size(),
-		signers: signers,
 	}
 
 	// return document data state

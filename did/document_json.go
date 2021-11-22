@@ -23,7 +23,6 @@ func (doc DocumentData) MarshalJSON() ([]byte, error) {
 		CR:         doc.creator,
 		TL:         doc.title,
 		SZ:         doc.size,
-		SG:         doc.signers,
 	})
 }
 
@@ -32,7 +31,6 @@ type DocumentJSONUnpacker struct {
 	CR json.RawMessage `json:"creator"`
 	TL string          `json:"title"`
 	SZ currency.Big    `json:"size"`
-	SG json.RawMessage `json:"signers"`
 }
 
 func (doc *DocumentData) UnpackJSON(b []byte, enc *jsonenc.Encoder) error {
@@ -41,5 +39,5 @@ func (doc *DocumentData) UnpackJSON(b []byte, enc *jsonenc.Encoder) error {
 		return err
 	}
 
-	return doc.unpack(enc, udoc.DI, udoc.CR, udoc.TL, udoc.SZ, udoc.SG)
+	return doc.unpack(enc, udoc.DI, udoc.CR, udoc.TL, udoc.SZ)
 }

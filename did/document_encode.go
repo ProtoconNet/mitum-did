@@ -13,7 +13,6 @@ func (doc *DocumentData) unpack(
 	cr []byte, // creator
 	tl string,
 	sz currency.Big,
-	bsg []byte, // signers
 ) error {
 
 	// unpack document info
@@ -36,23 +35,6 @@ func (doc *DocumentData) unpack(
 
 	doc.title = tl
 	doc.size = sz
-
-	hits, err := enc.DecodeSlice(bsg)
-	if err != nil {
-		return err
-	}
-	// unpack signers
-	signers := make([]DocSign, len(hits))
-
-	for i := range hits {
-		s, ok := hits[i].(DocSign)
-		if !ok {
-			return errors.Errorf("not DocSign : %T", s)
-		}
-
-		signers[i] = s
-	}
-	doc.signers = signers
 
 	return nil
 }

@@ -14,7 +14,6 @@ func (doc DocumentData) MarshalBSON() ([]byte, error) {
 			"creator":      doc.creator,
 			"title":        doc.title,
 			"size":         doc.size,
-			"signers":      doc.signers,
 		}),
 	)
 }
@@ -24,7 +23,6 @@ type DocumentBSONUnpacker struct {
 	CR bson.Raw     `bson:"creator"`
 	TL string       `bson:"title"`
 	SZ currency.Big `bson:"size"`
-	SG bson.Raw     `bson:"signers"`
 }
 
 func (doc *DocumentData) UnpackBSON(b []byte, enc *bsonenc.Encoder) error {
@@ -33,5 +31,5 @@ func (doc *DocumentData) UnpackBSON(b []byte, enc *bsonenc.Encoder) error {
 		return err
 	}
 
-	return doc.unpack(enc, udoc.DI, udoc.CR, udoc.TL, udoc.SZ, udoc.SG)
+	return doc.unpack(enc, udoc.DI, udoc.CR, udoc.TL, udoc.SZ)
 }
