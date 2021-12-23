@@ -7,9 +7,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/ProtoconNet/mitum-did/did"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
-	"github.com/ProtoconNet/mitum-did/did"
 	"github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/base/block"
@@ -505,13 +505,13 @@ func (st *Database) DocumentsByAddress(
 }
 
 func (st *Database) Document(
-	i currency.Big, /* document id */
+	s string, /* summary */
 ) (DocumentValue, bool /* exists */, error) {
 
 	var va DocumentValue
 	if err := st.database.Client().GetByFilter(
 		defaultColNameDocument,
-		util.NewBSONFilter("documentid", i).D(),
+		util.NewBSONFilter("summary", s).D(),
 		func(res *mongo.SingleResult) error {
 
 			i, err := loadDocument(res.Decode, st.database.Encoders())

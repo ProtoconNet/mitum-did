@@ -22,12 +22,7 @@ func (hd *Handlers) handleDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h, err := parseDocIdFromPath(mux.Vars(r)["documentid"])
-	if err != nil {
-		HTTP2ProblemWithError(w, errors.Errorf("invalid document id for document by id: %q", err), http.StatusBadRequest)
-
-		return
-	}
+	h := mux.Vars(r)["summary"]
 
 	if v, err, shared := hd.rg.Do(cachekey, func() (interface{}, error) {
 		return hd.handleDocumentInGroup(h)
@@ -42,8 +37,8 @@ func (hd *Handlers) handleDocument(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (hd *Handlers) handleDocumentInGroup(i currency.Big) ([]byte, error) {
-	switch va, found, err := hd.database.Document(i); {
+func (hd *Handlers) handleDocumentInGroup(s string) ([]byte, error) {
+	switch va, found, err := hd.database.Document(s); {
 	case err != nil:
 		return nil, err
 	case !found:
@@ -232,7 +227,7 @@ func (hd *Handlers) handleDocumentsByHeightInGroup(
 func (hd *Handlers) buildDocumentHal(va DocumentValue) (Hal, error) {
 	var hal Hal
 
-	h, err := hd.combineURL(HandlerPathDocument, "documentid", va.Document().Info().Index().String())
+	h, err := hd.combineURL(HandlerPathDocument, "summary", va.Document().Info().Index().String())
 	if err != nil {
 		return nil, err
 	}
